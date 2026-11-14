@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>API Workbench</title>
+  <style>
+    :root {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #e8edf5;
+      background: #0c111b;
+      font-synthesis: none;
+      --panel: #131b28;
+      --panel-raised: #182333;
+      --line: #28374a;
+      --muted: #9aa9bc;
+      --accent: #8be0c1;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 82% 2%, rgb(40 104 94 / 16%), transparent 34rem),
+        #0c111b;
+    }
+
+    main { width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: 48px 0 64px; }
+    .eyebrow { color: var(--accent); font-size: .75rem; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: 10px 0 8px; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -.045em; }
+    .intro { max-width: 670px; margin: 0; color: var(--muted); line-height: 1.65; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr); gap: 20px; margin-top: 30px; align-items: start; }
+    .card { border: 1px solid var(--line); border-radius: 16px; background: rgb(19 27 40 / 94%); box-shadow: 0 18px 54px rgb(0 0 0 / 18%); }
+    .card-head { padding: 20px 22px 16px; border-bottom: 1px solid var(--line); }
+    .card-head h2 { margin: 0; font-size: 1rem; }
+    .card-head p { margin: 6px 0 0; color: var(--muted); font-size: .86rem; }
+    form { padding: 20px 22px 22px; }
+    label { display: block; margin-bottom: 8px; color: #cbd5e2; font-size: .82rem; font-weight: 650; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #33445a;
+      border-radius: 9px;
+      outline: none;
+      background: #0d1521;
+      color: #edf3fa;
+      font: inherit;
+      font-size: .9rem;
+    }
+    input, select { height: 42px; padding: 0 12px; }
+    textarea { min-height: 130px; padding: 12px; resize: vertical; font: .84rem/1.55 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgb(139 224 193 / 12%); }
+    .field { margin-bottom: 17px; }
+    .url-row { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 10px; }
+    .key-row { display: grid; grid-template-columns: minmax(0, 1fr) 110px; gap: 10px; }
+    .hint { margin: 7px 0 0; color: #91a0b4; font-size: .77rem; line-height: 1.5; }
+    .advanced { margin: 18px 0; border-top: 1px solid var(--line); padding-top: 17px; }
+    .advanced summary { color: #cbd5e2; font-size: .84rem; font-weight: 650; cursor: pointer; }
+    .advanced-fields { padding-top: 16px; }
+    .notice { margin: 18px 0 0; padding: 11px 12px; border: 1px solid #5b4b2b; border-radius: 9px; background: rgb(115 85 34 / 13%); color: #d7c493; font-size: .78rem; line-height: 1.5; }
+    button { border: 0; border-radius: 9px; cursor: pointer; font: inherit; font-weight: 700; }
+    .send { width: 100%; min-height: 46px; background: var(--accent); color: #092118; transition: filter .15s, transform .15s; }
+    .send:hover { filter: brightness(1.06); }
+    .send:active { transform: translateY(1px); }
+    .send:disabled { cursor: wait; opacity: .7; }
+    .toggle { border: 1px solid #33445a; background: #172131; color: #cbd5e2; font-size: .8rem; }
+    .response-card { min-height: 420px; }
+    .response-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .status { color: var(--muted); font: .78rem ui-monospace, SFMono-Regular, Consolas, monospace; text-align: right; }
+    .response-body { min-height: 350px; padding: 18px 20px; }
+    pre { margin: 0; overflow: auto; color: #d5e0ed; font: .82rem/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .placeholder { color: #8090a5; }
+    .good { color: var(--accent); }
+    .bad { color: #ff9a9a; }
+    @media (max-width: 760px) {
+      main { width: min(100% - 28px, 560px); padding-top: 32px; }
+      .layout { grid-template-columns: 1fr; }
+      .response-card { min-height: 300px; }
+      .response-body { min-height: 230px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">A simple API client</div>
+      <h1>API Workbench</h1>
+      <p class="intro">Send a request to an API, add an optional key and JSON data, and inspect the response right here.</p>
+    </header>
+
+    <div class="layout">
+      <section class="card" aria-labelledby="request-title">
+        <div class="card-head">
+          <h2 id="request-title">Request</h2>
+          <p>Enter the endpoint and any data the API expects.</p>
+        </div>
+        <form id="request-form">
+          <div class="field">
+            <label for="endpoint">API endpoint</label>
+            <div class="url-row">
+              <select id="method" aria-label="HTTP method">
+                <option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option>
+              </select>
+              <input id="endpoint" type="url" placeholder="https://api.example.com/v1/items" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="api-key">API key <span style="color:#91a0b4;font-weight:400">(optional)</span></label>
+            <div class="key-row">
+              <input id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your key">
+              <button class="toggle" id="toggle-key" type="button" aria-pressed="false">Show key</button>
+            </div>
+            <p class="hint">Sent as an Authorization: Bearer header. The key is not saved by this page.</p>
+          </div>
+
+          <div class="field" id="body-field">
+            <label for="body">Request data (JSON)</label>
+            <textarea id="body" spellcheck="false" aria-describedby="body-hint">{}</textarea>
+            <p class="hint" id="body-hint">The request will be sent as JSON. GET requests do not include a body.</p>
+          </div>
+
+          <details class="advanced">
+            <summary>Advanced: additional headers</summary>
+            <div class="advanced-fields">
+              <label for="headers">Headers (JSON object)</label>
+              <textarea id="headers" spellcheck="false" aria-label="Additional request headers">{}</textarea>
+              <p class="hint">Example: {"X-Client-Name": "my-app"}. These are added to the request.</p>
+            </div>
+          </details>
+
+          <button class="send" id="send-button" type="submit">Send request</button>
+          <p class="notice"><strong>Key safety:</strong> masking only hides the key on screen. A key used in a browser is still accessible to the browser user and may appear in developer tools. For a truly secret key, send requests through a secure server-side proxy you control.</p>
+        </form>
+      </section>
+
+      <section class="card response-card" aria-labelledby="response-title">
+        <div class="card-head response-top">
+          <div>
+            <h2 id="response-title">Response</h2>
+            <p>API results will appear here.</p>
+          </div>
+          <div class="status" id="status" aria-live="polite"></div>
+        </div>
+        <div class="response-body">
+          <pre class="placeholder" id="response" aria-live="polite">Ready when you are.</pre>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const form = document.querySelector("#request-form");
+    const methodSelect = document.querySelector("#method");
+    const bodyField = document.querySelector("#body-field");
+    const keyInput = document.querySelector("#api-key");
+    const toggleKeyButton = document.querySelector("#toggle-key");
+    const sendButton = document.querySelector("#send-button");
+    const responseOutput = document.querySelector("#response");
+    const statusOutput = document.querySelector("#status");
+
+    function updateBodyVisibility() {
+      bodyField.hidden = methodSelect.value === "GET";
+    }
+
+    methodSelect.addEventListener("change", updateBodyVisibility);
+    updateBodyVisibility();
+
+    toggleKeyButton.addEventListener("click", () => {
+      const showing = keyInput.type === "password";
+      keyInput.type = showing ? "text" : "password";
+      toggleKeyButton.textContent = showing ? "Hide key" : "Show key";
+      toggleKeyButton.setAttribute("aria-pressed", String(showing));
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const method = methodSelect.value;
+      let headers;
+
+      try {
+        headers = JSON.parse(document.querySelector("#headers").value || "{}");
+        if (!headers || Array.isArray(headers) || typeof headers !== "object") {
+          throw new Error("Headers must be a JSON object.");
+        }
+      } catch (error) {
+        statusOutput.textContent = "Invalid headers";
+        statusOutput.className = "status bad";
+        responseOutput.textContent = error instanceof SyntaxError
+          ? `Could not parse headers JSON: ${error.message}`
+          : error.message;
+        responseOutput.className = "bad";
+        return;
+      }
+
+      let body;
+      if (method !== "GET") {
+        try {
+          body = JSON.parse(document.querySelector("#body").value || "{}");
+        } catch (error) {
+          statusOutput.textContent = "Invalid request data";
+          statusOutput.className = "status bad";
+          responseOutput.textContent = `Could not parse request JSON: ${error.message}`;
+          responseOutput.className = "bad";
+          return;
+        }
+      }
+
+      if (keyInput.value) {
+        headers.Authorization = `Bearer ${keyInput.value}`;
+      }
+      if (method !== "GET" && !Object.keys(headers).some((name) => name.toLowerCase() === "content-type")) {
+        headers["Content-Type"] = "application/json";
+      }
+
+      const options = { method, headers };
+      if (method !== "GET") options.body = JSON.stringify(body);
+
+      sendButton.disabled = true;
+      sendButton.textContent = "Sending…";
+      statusOutput.textContent = "";
+      responseOutput.className = "placeholder";
+      responseOutput.textContent = "Waiting for the API…";
+      const startedAt = performance.now();
+
+      try {
+        const result = await fetch(document.querySelector("#endpoint").value, options);
+        const text = await result.text();
+        let formatted = text || "(empty response)";
+        try {
+          formatted = JSON.stringify(JSON.parse(text), null, 2);
+        } catch {
+          // Keep non-JSON responses as plain text.
+        }
+        responseOutput.textContent = formatted;
+        responseOutput.className = "";
+        statusOutput.textContent = `${result.status} ${result.statusText} · ${Math.round(performance.now() - startedAt)} ms`;
+        statusOutput.className = `status ${result.ok ? "good" : "bad"}`;
+      } catch (error) {
+        responseOutput.textContent = `Request failed: ${error.message}\n\nThe API may be unreachable or may not allow browser requests (CORS).`;
+        responseOutput.className = "bad";
+        statusOutput.textContent = `Failed · ${Math.round(performance.now() - startedAt)} ms`;
+        statusOutput.className = "status bad";
+      } finally {
+        sendButton.disabled = false;
+        sendButton.textContent = "Send request";
+      }
+    });
+  </script>
+</body>
+</html>
