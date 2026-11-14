@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>Seasonal Crop Planner | Central Valley</title>
+  <title>Smart Crop Rotation Planner</title>
   <style>
     :root {
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -18,12 +18,11 @@
       --green-dark: #1d5138;
       --green-light: #e7f2e7;
       --panel: #fffefa;
-      --gold: #a56d17;
       --gold-light: #fff4d9;
+      --red-light: #fff0e9;
     }
 
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       min-height: 100vh;
@@ -31,71 +30,116 @@
         radial-gradient(ellipse at 93% 0%, rgb(183 212 166 / 32%), transparent 34rem),
         #f5f5ee;
     }
-
-    main { width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: 46px 0 64px; }
+    main { width: min(1200px, calc(100% - 40px)); margin: 0 auto; padding: 38px 0 58px; }
     .eyebrow { color: var(--green); font-size: .73rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
-    h1 { margin: 9px 0 10px; font-size: clamp(2.2rem, 5vw, 3.65rem); line-height: 1.05; letter-spacing: -.055em; }
-    .intro { max-width: 700px; margin: 0; color: var(--muted); line-height: 1.7; }
+    h1 { margin: 8px 0 9px; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.07; letter-spacing: -.05em; }
+    .intro { max-width: 760px; margin: 0; color: var(--muted); line-height: 1.65; }
     .hero { display: flex; justify-content: space-between; align-items: end; gap: 24px; }
-    .hero-mark { flex: 0 0 auto; display: grid; width: 72px; height: 72px; place-items: center; border: 1px solid #d5e4d1; border-radius: 22px; background: var(--green-light); color: var(--green-dark); font-size: 2rem; }
-    .layout { display: grid; grid-template-columns: minmax(280px, .75fr) minmax(0, 1.25fr); gap: 22px; margin-top: 30px; align-items: start; }
-    .card { border: 1px solid var(--line); border-radius: 17px; background: var(--panel); box-shadow: 0 16px 42px rgb(34 56 39 / 6%); }
-    .card-head { padding: 20px 22px 16px; border-bottom: 1px solid var(--line); }
-    .card-head h2 { margin: 0; font-size: 1.05rem; letter-spacing: -.02em; }
-    .card-head p { margin: 6px 0 0; color: var(--muted); font-size: .86rem; line-height: 1.55; }
-    form { padding: 20px 22px 22px; }
-    label { display: block; margin-bottom: 7px; color: #384b3e; font-size: .81rem; font-weight: 720; }
+    .hero-mark { flex: 0 0 auto; display: grid; width: 68px; height: 68px; place-items: center; border: 1px solid #d5e4d1; border-radius: 21px; background: var(--green-light); color: var(--green-dark); font-size: 1.9rem; }
+    .card { border: 1px solid var(--line); border-radius: 16px; background: var(--panel); box-shadow: 0 14px 40px rgb(34 56 39 / 6%); }
+    .card-head { padding: 19px 21px 15px; border-bottom: 1px solid var(--line); }
+    .card-head h2 { margin: 0; font-size: 1rem; letter-spacing: -.02em; }
+    .card-head p { margin: 6px 0 0; color: var(--muted); font-size: .83rem; line-height: 1.55; }
+    .form-card { margin-top: 24px; }
+    form { padding: 18px 21px 20px; }
+    .form-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; align-items: end; }
+    .field { min-width: 0; }
+    .field label { display: block; margin-bottom: 7px; color: #384b3e; font-size: .77rem; font-weight: 730; }
     input, select {
       width: 100%;
-      height: 43px;
+      height: 42px;
       border: 1px solid #cbd6c9;
       border-radius: 9px;
       outline: none;
       background: #fff;
       color: var(--ink);
       font: inherit;
-      font-size: .9rem;
+      font-size: .85rem;
     }
-    input { padding: 0 11px; }
-    select { padding: 0 34px 0 11px; }
+    input { padding: 0 10px; }
+    select { padding: 0 25px 0 10px; }
     input:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgb(47 112 78 / 12%); }
-    .field { margin-bottom: 17px; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .unit-row { display: grid; grid-template-columns: minmax(0, 1fr) 92px; gap: 8px; }
-    .hint { margin: 6px 0 0; color: var(--muted); font-size: .75rem; line-height: 1.5; }
-    .find { width: 100%; min-height: 47px; margin-top: 3px; border: 0; border-radius: 10px; background: var(--green); color: white; cursor: pointer; font: inherit; font-weight: 760; transition: background .15s, transform .15s; }
-    .find:hover { background: var(--green-dark); }
-    .find:active { transform: translateY(1px); }
-    .notice { margin: 17px 0 0; padding: 12px; border: 1px solid #e8d8ae; border-radius: 10px; background: var(--gold-light); color: #69501f; font-size: .76rem; line-height: 1.55; }
-    .results-head { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
-    .count { flex: 0 0 auto; padding: 6px 10px; border-radius: 99px; background: var(--green-light); color: var(--green-dark); font-size: .75rem; font-weight: 750; }
-    .results { display: grid; gap: 12px; padding: 16px; }
-    .empty { padding: 36px 22px; color: var(--muted); text-align: center; line-height: 1.65; }
-    .crop {
-      padding: 16px 17px;
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      background: #fff;
+    .lat, .lon { grid-column: span 1; }
+    .season, .start, .end, .crop-type { grid-column: span 1; }
+    .crop-select { grid-column: span 2; }
+    .actions { grid-column: span 2; }
+    .hint { margin: 6px 0 0; color: var(--muted); font-size: .71rem; line-height: 1.45; }
+    .submit {
+      width: 100%;
+      min-height: 42px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--green);
+      color: white;
+      cursor: pointer;
+      font: inherit;
+      font-size: .83rem;
+      font-weight: 760;
+      transition: background .15s, transform .15s;
     }
+    .submit:hover { background: var(--green-dark); }
+    .submit:active { transform: translateY(1px); }
+    .submit:disabled { cursor: progress; opacity: .7; }
+    .form-note { margin: 12px 0 0; color: var(--muted); font-size: .72rem; line-height: 1.55; }
+    .notice { margin: 12px 0 0; padding: 11px 12px; border: 1px solid #e8d8ae; border-radius: 9px; background: var(--gold-light); color: #69501f; font-size: .74rem; line-height: 1.55; }
+    .error { display: none; margin: 12px 0 0; padding: 10px 12px; border: 1px solid #e8bcb0; border-radius: 9px; background: var(--red-light); color: #843e2b; font-size: .8rem; line-height: 1.5; }
+    .error.visible { display: block; }
+    .section { margin-top: 21px; }
+    .section-head { display: flex; justify-content: space-between; align-items: start; gap: 16px; margin-bottom: 11px; }
+    .section-head h2 { margin: 0; font-size: 1.1rem; letter-spacing: -.025em; }
+    .section-head p { margin: 5px 0 0; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+    .tag { flex: 0 0 auto; padding: 6px 9px; border-radius: 99px; background: var(--green-light); color: var(--green-dark); font-size: .7rem; font-weight: 750; }
+    .tag.pending { background: #f0f1ed; color: #68776d; }
+    .tag.warning { background: var(--gold-light); color: #805c1e; }
+    .metric-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+    .metric { min-height: 103px; padding: 14px 14px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+    .metric-name { color: var(--muted); font-size: .7rem; line-height: 1.4; }
+    .metric-value { margin-top: 8px; color: var(--green-dark); font-size: 1.38rem; font-weight: 780; letter-spacing: -.04em; }
+    .metric-detail { margin-top: 4px; color: #829087; font-size: .67rem; }
+    .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .chart-card { min-width: 0; padding: 16px 17px 12px; border: 1px solid var(--line); border-radius: 13px; background: var(--panel); }
+    .chart-card h3 { margin: 0; font-size: .86rem; }
+    .chart-card p { margin: 5px 0 0; color: var(--muted); font-size: .7rem; }
+    canvas { display: block; width: 100%; height: 205px; margin-top: 7px; }
+    .chart-legend { display: flex; flex-wrap: wrap; gap: 7px 14px; color: var(--muted); font-size: .68rem; }
+    .legend-item { display: inline-flex; align-items: center; gap: 5px; }
+    .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 3px; }
+    .two-panels { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .75fr); gap: 15px; align-items: start; }
+    .candidate-list { display: grid; gap: 10px; }
+    .crop-card { padding: 15px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
     .crop-top { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
-    .crop h3 { margin: 0; font-size: 1rem; letter-spacing: -.02em; }
-    .group { display: inline-block; margin-top: 5px; color: var(--muted); font-size: .76rem; }
-    .badge { flex: 0 0 auto; max-width: 48%; padding: 5px 8px; border-radius: 99px; background: #edf4ec; color: var(--green-dark); font-size: .68rem; font-weight: 730; text-align: center; }
-    .badge.caution { background: #fff3da; color: #805c1e; }
-    .crop-data { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px 16px; margin-top: 13px; padding-top: 12px; border-top: 1px solid #edf0e9; }
-    .datum { color: var(--muted); font-size: .74rem; line-height: 1.45; }
-    .datum strong { display: block; margin-bottom: 2px; color: #34473a; font-size: .72rem; }
-    .why { margin: 12px 0 0; color: #526457; font-size: .78rem; line-height: 1.55; }
-    .source-note { margin: 15px 3px 0; color: #718076; font-size: .73rem; line-height: 1.6; }
-    footer { margin-top: 24px; color: #758278; font-size: .75rem; line-height: 1.6; }
-    @media (max-width: 760px) {
-      main { width: min(100% - 28px, 560px); padding-top: 30px; }
-      .hero-mark { display: none; }
-      .layout { grid-template-columns: 1fr; }
+    .crop-card h3 { margin: 0; font-size: .94rem; }
+    .crop-group { display: inline-block; margin-top: 4px; color: var(--muted); font-size: .7rem; }
+    .badge { flex: 0 0 auto; max-width: 49%; padding: 5px 8px; border-radius: 99px; background: #edf4ec; color: var(--green-dark); font-size: .67rem; font-weight: 730; text-align: center; }
+    .badge.caution { background: var(--gold-light); color: #805c1e; }
+    .crop-info { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; margin-top: 12px; padding-top: 11px; border-top: 1px solid #edf0e9; }
+    .datum { color: var(--muted); font-size: .71rem; line-height: 1.45; }
+    .datum strong { display: block; margin-bottom: 2px; color: #34473a; font-size: .69rem; }
+    .reason { margin: 10px 0 0; color: #526457; font-size: .75rem; line-height: 1.55; }
+    .side-stack { display: grid; gap: 12px; }
+    .pending-card { padding: 16px; border: 1px dashed #cbd6c9; border-radius: 12px; background: #fafbf7; }
+    .pending-card h3 { margin: 0; font-size: .88rem; }
+    .pending-card p { margin: 7px 0 0; color: var(--muted); font-size: .75rem; line-height: 1.55; }
+    .source { margin: 13px 2px 0; color: #76847a; font-size: .7rem; line-height: 1.55; }
+    .source a { color: var(--green-dark); }
+    .empty { padding: 32px 18px; border: 1px dashed #d1dbcf; border-radius: 12px; background: var(--panel); color: var(--muted); text-align: center; font-size: .83rem; line-height: 1.6; }
+    footer { margin-top: 24px; color: #758278; font-size: .72rem; line-height: 1.6; }
+    @media (max-width: 900px) {
+      .form-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .crop-select, .actions { grid-column: span 2; }
+      .metric-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
-    @media (max-width: 420px) {
-      .two-col { grid-template-columns: 1fr; gap: 0; }
-      .crop-data { grid-template-columns: 1fr; }
+    @media (max-width: 650px) {
+      main { width: min(100% - 26px, 560px); padding-top: 28px; }
+      .hero-mark { display: none; }
+      .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .lat, .lon, .season, .start, .end, .crop-type { grid-column: span 1; }
+      .crop-select, .actions { grid-column: span 2; }
+      .charts, .two-panels { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 390px) {
+      .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .crop-info { grid-template-columns: 1fr; }
       .crop-top { flex-direction: column; }
       .badge { max-width: 100%; }
     }
@@ -105,87 +149,152 @@
   <main>
     <header class="hero">
       <div>
-        <div class="eyebrow">Central Valley · Crop guide</div>
-        <h1>Plan with the season.</h1>
-        <p class="intro">Choose a season and add your expected growing conditions to compare crops from the Central Valley crop table by temperature and seasonal water needs.</p>
+        <div class="eyebrow">NASA Earth data · Crop guide</div>
+        <h1>Smart Crop Rotation Planner</h1>
+        <p class="intro">Explore real NASA POWER weather data for your field and compare it with the crop table. Enter a location and date range to retrieve observations and see how temperatures align with draft crop ranges.</p>
       </div>
       <div class="hero-mark" aria-hidden="true">✳</div>
     </header>
 
-    <div class="layout">
-      <section class="card" aria-labelledby="inputs-title">
-        <div class="card-head">
-          <h2 id="inputs-title">Your growing conditions</h2>
-          <p>Optional temperature and water inputs help refine the comparison.</p>
-        </div>
-        <form id="planner-form">
-          <div class="field">
-            <label for="season">Season you’re planning for</label>
+    <section class="card form-card" aria-labelledby="conditions-title">
+      <div class="card-head">
+        <h2 id="conditions-title">Farm location & growing window</h2>
+        <p>NASA POWER provides point data from geographic coordinates. Coordinates are used only for the data request.</p>
+      </div>
+      <form id="planner-form">
+        <div class="form-grid">
+          <div class="field lat">
+            <label for="latitude">Latitude</label>
+            <input id="latitude" type="number" min="-90" max="90" step="any" placeholder="e.g. 36.7378" required>
+          </div>
+          <div class="field lon">
+            <label for="longitude">Longitude</label>
+            <input id="longitude" type="number" min="-180" max="180" step="any" placeholder="e.g. -119.7871" required>
+          </div>
+          <div class="field season">
+            <label for="season">Season</label>
             <select id="season" required>
-              <option value="">Select a season</option>
+              <option value="">Select season</option>
               <option value="winter">Winter</option>
               <option value="spring">Spring</option>
               <option value="summer">Summer</option>
               <option value="fall">Fall</option>
             </select>
-            <p class="hint">Season groups are broad labels, not planting-date advice.</p>
           </div>
-
-          <div class="field">
-            <label for="crop-type">Crop type</label>
+          <div class="field start">
+            <label for="start-date">Start date</label>
+            <input id="start-date" type="date" min="1981-01-01" required>
+          </div>
+          <div class="field end">
+            <label for="end-date">End date</label>
+            <input id="end-date" type="date" required>
+          </div>
+          <div class="field crop-type">
+            <label for="crop-type">Crop category</label>
             <select id="crop-type">
-              <option value="annual">Annual and cover crops</option>
-              <option value="perennial">Orchards and vines</option>
-              <option value="all">Show all crop types</option>
+              <option value="annual">Annual & cover crops</option>
+              <option value="perennial">Orchards & vines</option>
+              <option value="all">All crop types</option>
             </select>
           </div>
-
-          <div class="two-col">
-            <div class="field">
-              <label for="mean-temp">Expected mean temp (°C)</label>
-              <input id="mean-temp" type="number" step="any" placeholder="e.g. 22">
-              <p class="hint">Compare with optimum daily mean.</p>
-            </div>
-            <div class="field">
-              <label for="daily-high">Expected daily high (°C)</label>
-              <input id="daily-high" type="number" step="any" placeholder="e.g. 32">
-              <p class="hint">Check against heat-stress thresholds.</p>
-            </div>
+          <div class="field crop-select">
+            <label for="crop-select">Specific crop (optional)</label>
+            <select id="crop-select">
+              <option value="">Compare all in category</option>
+            </select>
           </div>
-
-          <div class="field">
-            <label for="water">Water available this season</label>
-            <div class="unit-row">
-              <input id="water" type="number" min="0" step="any" placeholder="Optional">
-              <select id="water-unit" aria-label="Water measurement unit">
-                <option value="mm">mm</option>
-                <option value="in">inches</option>
-              </select>
-            </div>
-            <p class="hint">Compare total available rain + irrigation with crop-use ranges.</p>
+          <div class="field actions">
+            <button class="submit" id="submit-button" type="submit">Fetch NASA data & evaluate</button>
           </div>
+        </div>
+        <p class="form-note">Choose up to 366 days. NASA POWER daily data begins on 1981-01-01; very recent dates may not be available yet.</p>
+        <p class="notice"><strong>Crop table warning:</strong> The attached spreadsheet identifies its agronomy values as unverified working estimates. Temperature matches are screening guidance, not a planting-date or yield guarantee. Consult local agronomists before acting.</p>
+        <div class="error" id="error-message" role="alert"></div>
+      </form>
+    </section>
 
-          <button class="find" type="submit">Compare crops</button>
-          <p class="notice"><strong>Draft data:</strong> The spreadsheet marks these values as unverified typical agronomy estimates, not verified local figures. Check crop recommendations with UC ANR / UC Cooperative Extension before making a planting decision.</p>
-        </form>
-      </section>
+    <section class="section" aria-labelledby="weather-title">
+      <div class="section-head">
+        <div>
+          <h2 id="weather-title">Weather conditions</h2>
+          <p id="weather-description">Live measurements from NASA POWER appear after a request.</p>
+        </div>
+        <span class="tag pending" id="weather-status">Waiting for location</span>
+      </div>
+      <div class="metric-grid" id="metrics" aria-live="polite">
+        <div class="metric"><div class="metric-name">Mean air temperature</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · T2M</div></div>
+        <div class="metric"><div class="metric-name">Average daily high</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · T2M_MAX</div></div>
+        <div class="metric"><div class="metric-name">Average daily low</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · T2M_MIN</div></div>
+        <div class="metric"><div class="metric-name">Accumulated precipitation</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · PRECTOTCORR</div></div>
+        <div class="metric"><div class="metric-name">Mean solar radiation</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · ALLSKY_SFC_SW_DWN</div></div>
+        <div class="metric"><div class="metric-name">Mean relative humidity</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · RH2M</div></div>
+      </div>
+      <p class="source" id="source-note">No measurements have been fetched yet. Values will be returned by NASA POWER and missing measurements will remain unavailable.</p>
+    </section>
 
-      <section class="card" aria-labelledby="results-title">
-        <div class="card-head results-head">
+    <section class="section" aria-labelledby="chart-section-title">
+      <div class="section-head">
+        <div>
+          <h2 id="chart-section-title">Daily trend</h2>
+          <p>Charts use the returned daily observations for the selected date range.</p>
+        </div>
+      </div>
+      <div class="charts">
+        <article class="chart-card">
+          <h3>Daily air temperature</h3>
+          <p>Daily mean, maximum, and minimum (°C)</p>
+          <canvas id="temperature-chart" aria-label="NASA POWER daily temperature chart"></canvas>
+          <div class="chart-legend">
+            <span class="legend-item"><i class="swatch" style="background:#2f704e"></i>Mean</span>
+            <span class="legend-item"><i class="swatch" style="background:#d27a3c"></i>Maximum</span>
+            <span class="legend-item"><i class="swatch" style="background:#7295b5"></i>Minimum</span>
+          </div>
+        </article>
+        <article class="chart-card">
+          <h3>Daily precipitation</h3>
+          <p>Corrected precipitation (mm/day)</p>
+          <canvas id="precipitation-chart" aria-label="NASA POWER daily precipitation chart"></canvas>
+          <div class="chart-legend">
+            <span class="legend-item"><i class="swatch" style="background:#5b9eb4"></i>PRECTOTCORR</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section two-panels" aria-label="Crop comparison and data status">
+      <div>
+        <div class="section-head">
           <div>
-            <h2 id="results-title">Crop candidates</h2>
-            <p id="results-description">Choose a season to see the closest seasonal matches.</p>
+            <h2>Crop climate comparison</h2>
+            <p id="recommendation-description">Fetch live weather to compare this date range with the crop table.</p>
           </div>
-          <span class="count" id="result-count" aria-live="polite">Not started</span>
+          <span class="tag pending" id="crop-count">Not evaluated</span>
         </div>
-        <div class="results" id="results" aria-live="polite">
-          <div class="empty">Your crop comparison will appear here.<br>Choose a season and select <strong>Compare crops</strong>.</div>
+        <div class="candidate-list" id="recommendations" aria-live="polite">
+          <div class="empty">Crop comparisons will appear here after NASA POWER data is retrieved.</div>
         </div>
-      </section>
-    </div>
+      </div>
+      <aside class="side-stack" aria-label="Other data sources">
+        <article class="pending-card">
+          <span class="tag pending">Not connected yet</span>
+          <h3>SMAP soil moisture</h3>
+          <p>Surface soil moisture is not being retrieved yet. No soil-moisture values or daytime/nighttime observations are shown in this version.</p>
+        </article>
+        <article class="pending-card">
+          <span class="tag pending">Not connected yet</span>
+          <h3>USDA soil characteristics</h3>
+          <p>Soil texture, organic matter, and nutrient-related properties are not connected yet. This planner does not estimate or claim field N-P-K levels.</p>
+        </article>
+        <article class="pending-card">
+          <span class="tag warning">Rotation rules pending</span>
+          <h3>Previous crop & nutrients</h3>
+          <p>Previous crop history and validated nutrient / disease-family rules are not part of this first increment. No rotation benefit is inferred from the current data.</p>
+        </article>
+      </aside>
+    </section>
 
     <footer>
-      Workbook limitation: it does not include planting windows, nitrogen behavior, or disease-family rotation rules. Seasonal labels below use its broad crop groups; they do not establish exact planting dates. Water use is approximate crop demand over the season, not pumped volume.
+      NASA POWER values are climate observations / estimates for a coordinate, not direct field sensor readings. Rainfall is displayed separately from crop water demand; it is not treated as irrigation or as total water available. The crop table is unverified and does not include planting windows. Review all agronomic decisions with local extension guidance.
     </footer>
   </main>
 
@@ -222,10 +331,197 @@
       { name: "Grapes", group: "Orchard / vine (does not rotate)", kind: "perennial", tLow: 20, tHigh: 30, tMid: 25, heat: 38, cold: "Dormant in winter", wLow: 500, wHigh: 900, wMid: 700 }
     ];
 
+    const parameterLabels = [
+      ["T2M", "Mean air temperature", "°C"],
+      ["T2M_MAX", "Average daily high", "°C"],
+      ["T2M_MIN", "Average daily low", "°C"],
+      ["PRECTOTCORR", "Accumulated precipitation", "mm"],
+      ["ALLSKY_SFC_SW_DWN", "Mean solar radiation", "kWh/m²/day"],
+      ["RH2M", "Mean relative humidity", "%"]
+    ];
     const form = document.querySelector("#planner-form");
-    const results = document.querySelector("#results");
-    const resultCount = document.querySelector("#result-count");
-    const resultsDescription = document.querySelector("#results-description");
+    const results = document.querySelector("#recommendations");
+    const errorOutput = document.querySelector("#error-message");
+    const submitButton = document.querySelector("#submit-button");
+    const cropSelect = document.querySelector("#crop-select");
+    let lastDailyData = [];
+
+    function updateCropOptions() {
+      const selectedName = cropSelect.value;
+      const type = document.querySelector("#crop-type").value;
+      const visibleCrops = crops.filter((crop) =>
+        type === "all" || (type === "perennial" ? crop.kind === "perennial" : crop.kind !== "perennial")
+      );
+      cropSelect.replaceChildren(new Option("Compare all in category", ""));
+      for (const crop of visibleCrops) {
+        cropSelect.add(new Option(crop.name, crop.name));
+      }
+      if (visibleCrops.some((crop) => crop.name === selectedName)) {
+        cropSelect.value = selectedName;
+      }
+    }
+    document.querySelector("#crop-type").addEventListener("change", updateCropOptions);
+    updateCropOptions();
+
+    function renderMetrics(summary) {
+      const container = document.querySelector("#metrics");
+      container.replaceChildren();
+      for (const [parameter, label, displayUnit] of parameterLabels) {
+        const datum = summary[parameter];
+        const card = document.createElement("article");
+        card.className = "metric";
+        const name = document.createElement("div");
+        name.className = "metric-name";
+        name.textContent = label;
+        const value = document.createElement("div");
+        value.className = "metric-value";
+        if (!datum || datum.value === null) {
+          value.textContent = "N/A";
+        } else {
+          const number = Number(datum.value).toFixed(parameter === "RH2M" ? 1 : 2);
+          value.textContent = `${number} ${displayUnit}`;
+        }
+        const detail = document.createElement("div");
+        detail.className = "metric-detail";
+        detail.textContent = datum
+          ? `${datum.days_available} valid day${datum.days_available === 1 ? "" : "s"} · ${parameter}`
+          : `${parameter} · no data`;
+        card.append(name, value, detail);
+        container.append(card);
+      }
+    }
+
+    function drawEmpty(canvas, message) {
+      const rect = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.max(1, Math.round(rect.width * ratio));
+      canvas.height = Math.round(205 * ratio);
+      const context = canvas.getContext("2d");
+      context.scale(ratio, ratio);
+      context.fillStyle = "#77857a";
+      context.font = "13px system-ui, sans-serif";
+      context.textAlign = "center";
+      context.fillText(message, rect.width / 2, 102);
+    }
+
+    function drawTemperatureChart(daily) {
+      const canvas = document.querySelector("#temperature-chart");
+      const rect = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      const width = Math.max(1, rect.width);
+      const height = 205;
+      canvas.width = Math.round(width * ratio);
+      canvas.height = Math.round(height * ratio);
+      const ctx = canvas.getContext("2d");
+      ctx.scale(ratio, ratio);
+      const series = [
+        { key: "T2M", color: "#2f704e" },
+        { key: "T2M_MAX", color: "#d27a3c" },
+        { key: "T2M_MIN", color: "#7295b5" }
+      ];
+      const values = daily.flatMap((day) => series.map((line) => day[line.key]).filter((value) => value !== null && Number.isFinite(value)));
+      if (!values.length) {
+        drawEmpty(canvas, "No valid temperature measurements");
+        return;
+      }
+      let minimum = Math.min(...values);
+      let maximum = Math.max(...values);
+      if (minimum === maximum) { minimum -= 1; maximum += 1; }
+      const pad = { left: 34, right: 8, top: 10, bottom: 24 };
+      const plotWidth = width - pad.left - pad.right;
+      const plotHeight = height - pad.top - pad.bottom;
+      const y = (value) => pad.top + (maximum - value) / (maximum - minimum) * plotHeight;
+      ctx.font = "10px system-ui, sans-serif";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      for (let tick = 0; tick <= 3; tick += 1) {
+        const value = minimum + (maximum - minimum) * tick / 3;
+        const yy = pad.top + plotHeight * tick / 3;
+        ctx.strokeStyle = "#e7ece5";
+        ctx.beginPath();
+        ctx.moveTo(pad.left, yy);
+        ctx.lineTo(width - pad.right, yy);
+        ctx.stroke();
+        ctx.fillStyle = "#829087";
+        ctx.fillText(value.toFixed(0), pad.left - 5, yy);
+      }
+      series.forEach((line) => {
+        ctx.strokeStyle = line.color;
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        let started = false;
+        daily.forEach((day, index) => {
+          const value = day[line.key];
+          if (value === null || !Number.isFinite(value)) {
+            started = false;
+            return;
+          }
+          const x = pad.left + (daily.length < 2 ? plotWidth / 2 : index / (daily.length - 1) * plotWidth);
+          if (started) ctx.lineTo(x, y(value));
+          else { ctx.moveTo(x, y(value)); started = true; }
+        });
+        ctx.stroke();
+      });
+      ctx.fillStyle = "#829087";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+      if (daily.length) ctx.fillText(daily[0].date, pad.left, height - 5);
+      if (daily.length > 1) {
+        ctx.textAlign = "right";
+        ctx.fillText(daily[daily.length - 1].date, width - pad.right, height - 5);
+      }
+    }
+
+    function drawPrecipitationChart(daily) {
+      const canvas = document.querySelector("#precipitation-chart");
+      const rect = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      const width = Math.max(1, rect.width);
+      const height = 205;
+      canvas.width = Math.round(width * ratio);
+      canvas.height = Math.round(height * ratio);
+      const ctx = canvas.getContext("2d");
+      ctx.scale(ratio, ratio);
+      const values = daily.map((day) => day.PRECTOTCORR).filter((value) => value !== null && Number.isFinite(value));
+      if (!values.length) {
+        drawEmpty(canvas, "No valid precipitation measurements");
+        return;
+      }
+      const maximum = Math.max(...values, 1);
+      const pad = { left: 34, right: 8, top: 10, bottom: 24 };
+      const plotWidth = width - pad.left - pad.right;
+      const plotHeight = height - pad.top - pad.bottom;
+      ctx.strokeStyle = "#e7ece5";
+      ctx.beginPath();
+      ctx.moveTo(pad.left, height - pad.bottom);
+      ctx.lineTo(width - pad.right, height - pad.bottom);
+      ctx.stroke();
+      const slot = plotWidth / Math.max(daily.length, 1);
+      const barWidth = Math.max(1, Math.min(7, slot * .72));
+      daily.forEach((day, index) => {
+        const value = day.PRECTOTCORR;
+        if (value === null || !Number.isFinite(value)) return;
+        const barHeight = Math.max(1, value / maximum * plotHeight);
+        const x = pad.left + index * slot + (slot - barWidth) / 2;
+        ctx.fillStyle = "#5b9eb4";
+        ctx.fillRect(x, height - pad.bottom - barHeight, barWidth, barHeight);
+      });
+      ctx.fillStyle = "#829087";
+      ctx.font = "10px system-ui, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(daily[0].date, pad.left, height - 5);
+      if (daily.length > 1) {
+        ctx.textAlign = "right";
+        ctx.fillText(daily[daily.length - 1].date, width - pad.right, height - 5);
+      }
+    }
+
+    function redrawCharts() {
+      if (!lastDailyData.length) return;
+      drawTemperatureChart(lastDailyData);
+      drawPrecipitationChart(lastDailyData);
+    }
+    window.addEventListener("resize", redrawCharts);
 
     function seasonRank(crop, season) {
       if (crop.kind === "perennial") return 3;
@@ -257,123 +553,152 @@
       return "Planting window not in workbook";
     }
 
-    function temperatureDistance(crop, temp) {
-      if (temp === null) return 0;
-      if (temp < crop.tLow) return crop.tLow - temp;
-      if (temp > crop.tHigh) return temp - crop.tHigh;
+    function temperatureDistance(crop, temperature) {
+      if (temperature === null) return 0;
+      if (temperature < crop.tLow) return crop.tLow - temperature;
+      if (temperature > crop.tHigh) return temperature - crop.tHigh;
       return 0;
     }
 
-    function temperatureLabel(crop, temp) {
-      if (temp === null) return "Add mean temp to compare";
-      if (temp < crop.tLow) return `${(crop.tLow - temp).toFixed(1)}°C below optimum range`;
-      if (temp > crop.tHigh) return `${(temp - crop.tHigh).toFixed(1)}°C above optimum range`;
-      return "Within optimum mean-temp range";
-    }
-
-    function waterLabel(crop, water) {
-      if (water === null) return "Add available water to compare";
-      if (water < crop.wLow) return `Below listed range by ${Math.round(crop.wLow - water)} mm`;
-      if (water > crop.wHigh) return `At/above listed range (${Math.round(water)} mm)`;
-      return "Within listed seasonal range";
-    }
-
-    function cropExplanation(crop, season, meanTemp, dailyHigh, water) {
-      const points = [];
-      const label = seasonLabel(crop, season);
-      points.push(label);
-      if (meanTemp !== null) points.push(temperatureLabel(crop, meanTemp));
-      if (water !== null) points.push(waterLabel(crop, water));
-      if (dailyHigh !== null && dailyHigh >= crop.heat) {
-        points.push(`daily high meets/exceeds the ${crop.heat}°C heat threshold`);
-      }
-      return points.join(" · ");
-    }
-
-    function makeDatum(title, value) {
+    function makeDatum(titleText, valueText) {
       const wrapper = document.createElement("div");
       wrapper.className = "datum";
-      const strong = document.createElement("strong");
-      strong.textContent = title;
-      wrapper.append(strong, document.createTextNode(value));
+      const title = document.createElement("strong");
+      title.textContent = titleText;
+      wrapper.append(title, document.createTextNode(valueText));
       return wrapper;
     }
 
-    function renderCrop(crop, season, meanTemp, dailyHigh, water) {
+    function renderCrop(crop, season, meanTemperature, daily) {
       const article = document.createElement("article");
-      article.className = "crop";
+      article.className = "crop-card";
       const top = document.createElement("div");
       top.className = "crop-top";
       const titleWrap = document.createElement("div");
       const title = document.createElement("h3");
       title.textContent = crop.name;
       const group = document.createElement("span");
-      group.className = "group";
+      group.className = "crop-group";
       group.textContent = crop.group;
       titleWrap.append(title, group);
-
+      const rank = seasonRank(crop, season);
       const badge = document.createElement("span");
-      badge.className = `badge${seasonRank(crop, season) >= 2 ? " caution" : ""}`;
+      badge.className = `badge${rank >= 2 ? " caution" : ""}`;
       badge.textContent = seasonLabel(crop, season);
       top.append(titleWrap, badge);
 
-      const data = document.createElement("div");
-      data.className = "crop-data";
-      data.append(
-        makeDatum("Optimum daily mean", `${crop.tLow}–${crop.tHigh}°C (midpoint ${crop.tMid}°C)`),
-        makeDatum("Seasonal water use", `${crop.wLow}–${crop.wHigh} mm (midpoint ${crop.wMid} mm)`),
-        makeDatum("Cold / winter note", crop.cold),
-        makeDatum("Heat-stress threshold", `Above ${crop.heat}°C daily maximum`)
+      const temperatureFit = meanTemperature === null
+        ? "Temperature data unavailable"
+        : meanTemperature >= crop.tLow && meanTemperature <= crop.tHigh
+          ? "Observed mean is within draft optimum range"
+          : `${temperatureDistance(crop, meanTemperature).toFixed(1)}°C outside draft optimum range`;
+      const hotDays = daily.filter((day) => day.T2M_MAX !== null && day.T2M_MAX > crop.heat).length;
+      const heatFit = hotDays
+        ? `${hotDays} day${hotDays === 1 ? "" : "s"} above draft heat threshold`
+        : "No recorded daily high above draft threshold";
+      const info = document.createElement("div");
+      info.className = "crop-info";
+      info.append(
+        makeDatum("Draft optimum daily mean", `${crop.tLow}–${crop.tHigh}°C`),
+        makeDatum("Observed period mean", temperatureFit),
+        makeDatum("Approx. seasonal crop water use", `${crop.wLow}–${crop.wHigh} mm (draft table)`),
+        makeDatum("Heat comparison", heatFit),
+        makeDatum("Cold / winter note", crop.cold)
       );
-      const why = document.createElement("p");
-      why.className = "why";
-      why.textContent = cropExplanation(crop, season, meanTemp, dailyHigh, water);
-      article.append(top, data, why);
+      const reason = document.createElement("p");
+      reason.className = "reason";
+      reason.textContent = `Why it appears: ${seasonLabel(crop, season)}; ${temperatureFit.toLowerCase()}. Rainfall is reported separately and is not assumed to meet this crop's water needs.`;
+      article.append(top, info, reason);
       return article;
     }
 
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
+    function renderRecommendations(data) {
       const season = document.querySelector("#season").value;
-      if (!season) return;
-
       const type = document.querySelector("#crop-type").value;
-      const meanValue = document.querySelector("#mean-temp").value;
-      const highValue = document.querySelector("#daily-high").value;
-      const waterValue = document.querySelector("#water").value;
-      const meanTemp = meanValue === "" ? null : Number(meanValue);
-      const dailyHigh = highValue === "" ? null : Number(highValue);
-      const water = waterValue === ""
-        ? null
-        : Number(waterValue) * (document.querySelector("#water-unit").value === "in" ? 25.4 : 1);
-
-      let candidates = crops.filter((crop) => type === "all" || crop.kind === (type === "perennial" ? "perennial" : undefined) || (type === "annual" && crop.kind !== "perennial"));
+      const selectedCrop = cropSelect.value;
+      const meanTemperature = data.summary.T2M && data.summary.T2M.value !== null
+        ? Number(data.summary.T2M.value)
+        : null;
+      let candidates = crops.filter((crop) => {
+        const categoryMatches = type === "all" ||
+          (type === "perennial" ? crop.kind === "perennial" : crop.kind !== "perennial");
+        return categoryMatches && (!selectedCrop || crop.name === selectedCrop);
+      });
       candidates.sort((a, b) => {
         const bySeason = seasonRank(a, season) - seasonRank(b, season);
-        if (bySeason !== 0) return bySeason;
-        const byTemperature = temperatureDistance(a, meanTemp) - temperatureDistance(b, meanTemp);
-        if (byTemperature !== 0) return byTemperature;
-        const aWaterShortfall = water === null ? 0 : Math.max(0, a.wLow - water);
-        const bWaterShortfall = water === null ? 0 : Math.max(0, b.wLow - water);
-        if (aWaterShortfall !== bWaterShortfall) return aWaterShortfall - bWaterShortfall;
-        return a.wMid - b.wMid;
+        if (bySeason) return bySeason;
+        return temperatureDistance(a, meanTemperature) - temperatureDistance(b, meanTemperature);
       });
 
       results.replaceChildren();
-      if (candidates.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = "No crops match those filters.";
-        results.append(empty);
-      } else {
-        for (const crop of candidates) {
-          results.append(renderCrop(crop, season, meanTemp, dailyHigh, water));
-        }
+      for (const crop of candidates) results.append(renderCrop(crop, season, meanTemperature, data.daily));
+      document.querySelector("#crop-count").textContent = `${candidates.length} candidate${candidates.length === 1 ? "" : "s"}`;
+      const seasonName = season.charAt(0).toUpperCase() + season.slice(1);
+      document.querySelector("#recommendation-description").textContent =
+        `${seasonName} candidates ordered by broad crop group and observed temperature fit. This is not a yield or planting-date prediction.`;
+    }
+
+    function renderSourceNote(data) {
+      const note = document.querySelector("#source-note");
+      const warningText = data.warnings.length ? ` ${data.warnings.join(" ")}` : "";
+      note.textContent =
+        `${data.source} · ${data.location.latitude}, ${data.location.longitude} · ${data.date_range.start} to ${data.date_range.end} · Retrieved ${new Date(data.fetched_at).toLocaleString()}.${warningText}`;
+      document.querySelector("#weather-description").textContent =
+        `Observed daily weather summarized for ${data.date_range.start} through ${data.date_range.end}.`;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      errorOutput.classList.remove("visible");
+      const latitude = document.querySelector("#latitude").value;
+      const longitude = document.querySelector("#longitude").value;
+      const start = document.querySelector("#start-date").value;
+      const end = document.querySelector("#end-date").value;
+      if (start > end) {
+        errorOutput.textContent = "Start date must be on or before end date.";
+        errorOutput.classList.add("visible");
+        return;
       }
 
-      const seasonName = season.charAt(0).toUpperCase() + season.slice(1);
-      resultCount.textContent = `${candidates.length} crops`;
-      resultsDescription.textContent = `${seasonName} candidates, ordered by broad crop group and the conditions you entered.`;
+      submitButton.disabled = true;
+      submitButton.textContent = "Retrieving NASA data…";
+      document.querySelector("#weather-status").textContent = "Fetching live data";
+      document.querySelector("#weather-status").className = "tag warning";
+      document.querySelector("#source-note").textContent = "Loading NASA POWER data for this request…";
+      document.querySelector("#weather-description").textContent = "Waiting for the selected location and date range.";
+      document.querySelector("#crop-count").textContent = "Loading";
+      document.querySelector("#recommendation-description").textContent = "Waiting for live measurements.";
+      results.replaceChildren();
+      const loading = document.createElement("div");
+      loading.className = "empty";
+      loading.textContent = "Retrieving daily observations from NASA POWER…";
+      results.append(loading);
+      lastDailyData = [];
+      renderMetrics({});
+      drawEmpty(document.querySelector("#temperature-chart"), "Waiting for NASA data");
+      drawEmpty(document.querySelector("#precipitation-chart"), "Waiting for NASA data");
+      try {
+        const query = new URLSearchParams({ latitude, longitude, start, end });
+        const response = await fetch(`/api/power?${query.toString()}`, { headers: { Accept: "application/json" } });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || `Request failed (${response.status}).`);
+
+        renderMetrics(data.summary);
+        renderSourceNote(data);
+        lastDailyData = data.daily;
+        redrawCharts();
+        renderRecommendations(data);
+        document.querySelector("#weather-status").textContent = "NASA data loaded";
+        document.querySelector("#weather-status").className = "tag";
+      } catch (error) {
+        errorOutput.textContent = error.message || "Could not retrieve NASA POWER data. Please try again.";
+        errorOutput.classList.add("visible");
+        document.querySelector("#weather-status").textContent = "Request failed";
+        document.querySelector("#weather-status").className = "tag warning";
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Fetch NASA data & evaluate";
+      }
     });
   </script>
 </body>
