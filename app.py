@@ -43,6 +43,7 @@ MISSING_VALUE = -999
 SDA_URL = "https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest"
 
 app = Flask(__name__)
+application = app
 app.logger.setLevel(logging.INFO)
 _cache: dict[tuple[float, float, str, str], tuple[float, dict[str, Any]]] = {}
 _cache_lock = threading.Lock()
