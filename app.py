@@ -127,7 +127,7 @@ def _summarize_response(
             "days_available": len(values),
             "aggregation": aggregate_type,
         }
-
+ 
     ordered_daily = []
     for date_key in sorted(daily):
         values = daily[date_key]
