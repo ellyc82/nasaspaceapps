@@ -619,7 +619,7 @@
         if (value === null || !Number.isFinite(value)) return;
         const barHeight = Math.max(1, value / maximum * plotHeight);
         const x = pad.left + index * slot + (slot - barWidth) / 2;
-        ctx.fillStyle = "#5b9eb4";
+        ctx.fillStyle = "#255b82";
         ctx.fillRect(x, height - pad.bottom - barHeight, barWidth, barHeight);
       });
       ctx.fillStyle = "#829087";
