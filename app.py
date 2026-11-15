@@ -208,7 +208,7 @@ def _get_power_data(
 
 @app.get("/")
 def index():
-    return send_from_directory(BASE_DIR, "webpage.html")
+    return send_from_directory(BASE_DIR, "growing_season_risk_report_with_crops.html")
 
 
 @app.get("/api/power")

@@ -1,10 +1,10 @@
-<!doctype html>
-<html lang="en">
+<!--<!doctype html>
+<html lang="en">S
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>Analyze Previous Years' Crop Data</title>
+  <title>Growing-Season Risk Report</title>
   <style>
     :root {
       font-family: "Trebuchet MS", Arial, sans-serif;
@@ -21,14 +21,10 @@
       --gold-light: #fff4d9;
       --red-light: #fff0e9;
     }
-
     * { box-sizing: border-box; }
     body {
-      margin: 0;
-      min-height: 100vh;
-      background:
-        radial-gradient(ellipse at 93% 0%, rgb(183 212 166 / 32%), transparent 34rem),
-        #f5f5ee;
+      margin: 0; min-height: 100vh;
+      background: radial-gradient(ellipse at 93% 0%, rgb(183 212 166 / 32%), transparent 34rem), #f5f5ee;
     }
     main { width: min(1200px, calc(100% - 40px)); margin: 0 auto; padding: 38px 0 58px; }
     .eyebrow { color: var(--green); font-size: .73rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
@@ -46,37 +42,16 @@
     .field { min-width: 0; }
     .field label { display: block; margin-bottom: 7px; color: #384b3e; font-size: .77rem; font-weight: 730; }
     input, select {
-      width: 100%;
-      height: 42px;
-      border: 1px solid #cbd6c9;
-      border-radius: 9px;
-      outline: none;
-      background: #fff;
-      color: var(--ink);
-      font-family:  "Times", "Times New Roman", "Georgia", serif;
-      font-size: .85rem;
+      width: 100%; height: 42px; border: 1px solid #cbd6c9; border-radius: 9px; outline: none;
+      background: #fff; color: var(--ink); font-family: "Times", "Times New Roman", "Georgia", serif; font-size: .85rem;
     }
     input { padding: 0 10px; }
     select { padding: 0 25px 0 10px; }
     input:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgb(47 112 78 / 12%); }
-    .lat, .lon { grid-column: span 1; }
-    .season, .start, .end, .crop-type { grid-column: span 1; }
-    .crop-select { grid-column: span 2; }
+    .lat, .lon, .season, .start, .end, .threshold { grid-column: span 1; }
     .actions { grid-column: span 2; }
     .hint { margin: 6px 0 0; color: var(--muted); font-size: .71rem; line-height: 1.45; }
-    .submit {
-      width: 100%;
-      min-height: 42px;
-      border: 0;
-      border-radius: 9px;
-      background: var(--green);
-      color: white;
-      cursor: pointer;
-      font: inherit;
-      font-size: .83rem;
-      font-weight: 760;
-      transition: background .15s, transform .15s;
-    }
+    .submit { width: 100%; min-height: 42px; border: 0; border-radius: 9px; background: var(--green); color: white; cursor: pointer; font: inherit; font-size: .83rem; font-weight: 760; transition: background .15s, transform .15s; }
     .submit:hover { background: var(--green-dark); }
     .submit:active { transform: translateY(1px); }
     .submit:disabled { cursor: progress; opacity: .7; }
@@ -104,18 +79,9 @@
     .chart-legend { display: flex; flex-wrap: wrap; gap: 7px 14px; color: var(--muted); font-size: .68rem; }
     .legend-item { display: inline-flex; align-items: center; gap: 5px; }
     .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 3px; }
-    .two-panels { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, 1fr); gap: 15px; align-items: start; }
-    .candidate-list { display: grid; gap: 10px; }
-    .crop-card { padding: 15px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
-    .crop-top { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
-    .crop-card h3 { margin: 0; font-size: .94rem; }
-    .crop-group { display: inline-block; margin-top: 4px; color: var(--muted); font-size: .7rem; }
-    .badge { flex: 0 0 auto; max-width: 49%; padding: 5px 8px; border-radius: 99px; background: #edf4ec; color: var(--green-dark); font-size: .67rem; font-weight: 730; text-align: center; }
-    .badge.caution { background: var(--gold-light); color: #805c1e; }
-    .crop-info { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; margin-top: 12px; padding-top: 11px; border-top: 1px solid #edf0e9; }
-    .datum { color: var(--muted); font-size: .71rem; line-height: 1.45; }
-    .datum strong { display: block; margin-bottom: 2px; color: #34473a; font-size: .69rem; }
-    .reason { margin: 10px 0 0; color: #526457; font-size: .75rem; line-height: 1.55; }
+    .two-panels { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 1fr); gap: 15px; align-items: start; }
+    .crop-card { padding: 15px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); margin-top: 10px; }
+    .reason { margin: 0; color: #526457; font-size: .78rem; line-height: 1.6; }
     .side-stack { display: grid; gap: 12px; }
     .pending-card { padding: 16px; border: 1px dashed #cbd6c9; border-radius: 12px; background: #fafbf7; }
     .pending-card.live { border-style: solid; border-color: var(--line); background: var(--panel); }
@@ -131,710 +97,599 @@
     .source a { color: var(--green-dark); }
     .empty { padding: 32px 18px; border: 1px dashed #d1dbcf; border-radius: 12px; background: var(--panel); color: var(--muted); text-align: center; font-size: .83rem; line-height: 1.6; }
     footer { margin-top: 24px; color: #758278; font-size: .72rem; line-height: 1.6; }
-    @media (max-width: 900px) {
-      .form-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .crop-select, .actions { grid-column: span 2; }
-      .metric-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    }
+    @media (max-width: 900px) { .form-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .actions { grid-column: span 2; } .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 650px) {
       main { width: min(100% - 26px, 560px); padding-top: 28px; }
       .hero-mark { display: none; }
       .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .lat, .lon, .season, .start, .end, .crop-type { grid-column: span 1; }
-      .crop-select, .actions { grid-column: span 2; }
+      .lat, .lon, .season, .start, .end, .threshold { grid-column: span 1; }
+      .actions { grid-column: span 2; }
       .charts, .two-panels { grid-template-columns: 1fr; }
     }
-    @media (max-width: 390px) {
-      .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .crop-info { grid-template-columns: 1fr; }
-      .crop-top { flex-direction: column; }
-      .badge { max-width: 100%; }
-    }
+    @media (max-width: 390px) { .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .section-head { flex-direction: column; } }
   </style>
 </head>
 <body>
-  <main>
-    <header class="hero">
+<main>
+  <header class="hero">
+    <div>
+      <div class="eyebrow">NASA Earth Data · USDA Soil Data · Farm Planning</div>
+      <h1>Growing-Season Risk Report</h1>
+      <p class="intro">Understand the environmental conditions your farm has experienced. Explore historical temperature, rainfall, and soil information to identify patterns and potential growing-season concerns. We provide environmental insights so farmers can make informed decisions.</p>
+    </div>
+    <div class="hero-mark" aria-hidden="true">✳</div>
+  </header>
+
+  <section class="card form-card" aria-labelledby="conditions-title">
+    <div class="card-head">
+      <h2 id="conditions-title">Farm Location & Growing Window</h2>
+      <p>Enter the coordinates for your farm and select the historical period you want to examine.</p>
+    </div>
+    <form id="planner-form">
+      <div class="form-grid">
+        <div class="field lat">
+          <label for="latitude">Latitude</label>
+          <input id="latitude" type="number" min="-90" max="90" step="any" placeholder="E.g. 36.7378" required>
+        </div>
+        <div class="field lon">
+          <label for="longitude">Longitude</label>
+          <input id="longitude" type="number" min="-180" max="180" step="any" placeholder="E.g. -119.7871" required>
+        </div>
+        <div class="field season">
+          <label for="season">Growing season</label>
+          <select id="season" required>
+            <option value="">Select season</option>
+            <option value="winter">Winter</option>
+            <option value="spring">Spring</option>
+            <option value="summer">Summer</option>
+            <option value="fall">Fall</option>
+          </select>
+        </div>
+        <div class="field start">
+          <label for="start-date">Start date</label>
+          <input id="start-date" type="date" min="1981-01-01" required>
+        </div>
+        <div class="field end">
+          <label for="end-date">End date</label>
+          <input id="end-date" type="date" required>
+        </div>
+        <div class="field threshold">
+          <label for="heat-threshold">Heat threshold (°C)</label>
+          <input id="heat-threshold" type="number" value="35" step="1" required>
+          <p class="hint">Flag daily highs above this value.</p>
+        </div>
+        <div class="field threshold">
+          <label for="cold-threshold">Cold threshold (°C)</label>
+          <input id="cold-threshold" type="number" value="0" step="1" required>
+          <p class="hint">Flag daily lows below this value.</p>
+        </div>
+        <div class="field actions">
+          <button class="submit" id="submit-button" type="submit">Generate Growing-Season Report</button>
+        </div>
+      </div>
+      <p class="form-note">Choose a date range of up to 365 days. NASA POWER daily data begins on 1981-01-01. Dates cannot be in the future, and very recent dates may not be available yet.</p>
+      <p class="notice"><strong>Important:</strong> Temperature thresholds are user-selected screening values, not universal crop-damage limits. Historical weather does not predict next year's conditions or guarantee crop performance.</p>
+      <div class="error" id="error-message" role="alert"></div>
+    </form>
+  </section>
+
+  <section class="section" aria-labelledby="weather-title">
+    <div class="section-head">
       <div>
-        <div class="eyebrow">Utilizing NASA Earth data · Plan Next Season's Crop</div>
-        <h1>Analyze Previous Years' Crop Data</h1>
-        <p class="intro">Explore real weather data for your fields. Enter a location and date range to retrieve observations from previous years and see how temperatures align with new potential crop ranges. We give you the facts, you make the decisions.</p>
+        <h2 id="weather-title">Weather Conditions</h2>
+        <p id="weather-description">NASA POWER measurements will appear after you generate a report.</p>
       </div>
-      <div class="hero-mark" aria-hidden="true">✳</div>
-    </header>
+      <span class="tag pending" id="weather-status">Waiting for location</span>
+    </div>
+    <div class="metric-grid" id="metrics" aria-live="polite">
+      <div class="metric"><div class="metric-name">Mean air temperature</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · T2M</div></div>
+      <div class="metric"><div class="metric-name">Average daily high</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · T2M_MAX</div></div>
+      <div class="metric"><div class="metric-name">Average daily low</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · T2M_MIN</div></div>
+      <div class="metric"><div class="metric-name">Accumulated precipitation</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · PRECTOTCORR</div></div>
+      <div class="metric"><div class="metric-name">Daily solar energy</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · ALLSKY_SFC_SW_DWN</div></div>
+      <div class="metric"><div class="metric-name">Mean relative humidity</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · RH2M</div></div>
+      <div class="metric"><div class="metric-name">Surface soil wetness (modeled)</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · GWETTOP</div></div>
+      <div class="metric"><div class="metric-name">Root-zone soil wetness (modeled)</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · GWETROOT</div></div>
+    </div>
+    <p class="source" id="source-note">No measurements have been fetched yet.</p>
+  </section>
 
-    <section class="card form-card" aria-labelledby="conditions-title">
-      <div class="card-head">
-        <h2 id="conditions-title">Farm Location & Growing Window</h2>
-        <p>NASA POWER provides point data from geographic coordinates. Coordinates are used only for the data request.</p>
-      </div>
-      <form id="planner-form">
-        <div class="form-grid">
-          <div class="field lat">
-            <label for="latitude">Latitude</label>
-            <input id="latitude" type="number" min="-90" max="90" step="any" placeholder="E.g. 36.7378" required>
-          </div>
-          <div class="field lon">
-            <label for="longitude">Longitude</label>
-            <input id="longitude" type="number" min="-180" max="180" step="any" placeholder="E.g. -119.7871" required>
-          </div>
-          <div class="field season">
-            <label for="season">Season</label>
-            <select id="season" required>
-              <option value="">Select Season</option>
-              <option value="winter">Winter</option>
-              <option value="spring">Spring</option>
-              <option value="summer">Summer</option>
-              <option value="fall">Fall</option>
-            </select>
-          </div>
-          <div class="field start">
-            <label for="start-date">Start date</label>
-            <input id="start-date" type="date" min="1981-01-01" required>
-          </div>
-          <div class="field end">
-            <label for="end-date">End date</label>
-            <input id="end-date" type="date" required>
-          </div>
-          <div class="field crop-type">
-            <label for="crop-type">Crop category</label>
-            <select id="crop-type">
-              <option value="annual">Annual & cover crops</option>
-              <option value="perennial">Orchards & vines</option>
-              <option value="all">All crop types</option>
-            </select>
-          </div>
-          <div class="field crop-select">
-            <label for="crop-select">Specific crop (optional)</label>
-            <select id="crop-select">
-              <option value="">Compare all in category</option>
-            </select>
-          </div>
-          <div class="field actions">
-            <button class="submit" id="submit-button" type="submit">Fetch NASA data & evaluate</button>
-          </div>
-        </div>
-        <p class="form-note">Choose up to 365 days. NASA POWER daily data begins on 1981-01-01; dates cannot be in the future, and very recent dates may not be available yet.</p>
-        <p class="notice"><strong>Crop table warning:</strong> The attached spreadsheet identifies its agronomy values as unverified working estimates. Temperature matches are screening guidance, not a planting-date or yield guarantee. Consult local agronomists before acting.</p>
-        <div class="error" id="error-message" role="alert"></div>
-      </form>
-    </section>
-
-    <section class="section" aria-labelledby="weather-title">
-      <div class="section-head">
-        <div>
-          <h2 id="weather-title">Weather Conditions</h2>
-          <p id="weather-description">Live measurements from NASA POWER appear after a request.</p>
-        </div>
-        <span class="tag pending" id="weather-status">Waiting for location</span>
-      </div>
-      <div class="metric-grid" id="metrics" aria-live="polite">
-        <div class="metric"><div class="metric-name">Mean air temperature</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · T2M</div></div>
-        <div class="metric"><div class="metric-name">Average daily high</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · T2M_MAX</div></div>
-        <div class="metric"><div class="metric-name">Average daily low</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · T2M_MIN</div></div>
-        <div class="metric"><div class="metric-name">Accumulated precipitation</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · PRECTOTCORR</div></div>
-        <div class="metric"><div class="metric-name">Amount of solar energy in a day</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · ALLSKY_SFC_SW_DWN</div></div>
-        <div class="metric"><div class="metric-name">Mean relative humidity</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · RH2M</div></div>
-        <div class="metric"><div class="metric-name">Surface soil wetness, 0–1 (modeled)</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · GWETTOP</div></div>
-        <div class="metric"><div class="metric-name">Root-zone soil wetness, 0–1 (modeled)</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · GWETROOT</div></div>
-      </div>
-      <p class="source" id="source-note">No measurements have been fetched yet. Values will be returned by NASA POWER and missing measurements will remain unavailable.</p>
-    </section>
-
-    <section class="section" aria-labelledby="chart-section-title">
-      <div class="section-head">
-        <div>
-          <h2 id="chart-section-title">Daily trend</h2>
-          <p>Charts use the returned daily observations for the selected date range. It shows you the trends, so you can act on them.</p>
-        </div>
-      </div>
-      <div class="charts">
-        <article class="chart-card">
-          <h3>Daily air temperature</h3>
-          <p>Daily mean, maximum, and minimum (°C)</p>
-          <canvas id="temperature-chart" aria-label="NASA POWER daily temperature chart"></canvas>
-          <div class="chart-legend">
-            <span class="legend-item"><i class="swatch" style="background:#000000"></i>Mean</span>
-            <span class="legend-item"><i class="swatch" style="background:#3ea26e"></i>Maximum</span>
-            <span class="legend-item"><i class="swatch" style="background:#ecd856"></i>Minimum</span>
-          </div>
-        </article>
-        <article class="chart-card">
-          <h3>Daily precipitation</h3>
-          <p>Corrected precipitation (mm/day)</p>
-          <canvas id="precipitation-chart" aria-label="NASA POWER daily precipitation chart"></canvas>
-          <div class="chart-legend">
-            <span class="legend-item"><i class="swatch" style="background:#255b82"></i>PRECTOTCORR</span>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="section two-panels" aria-label="Crop comparison and data status">
+  <section class="section" aria-labelledby="chart-section-title">
+    <div class="section-head">
       <div>
-        <div class="section-head">
-          <div>
-            <h2>Crop climate comparison</h2>
-            <p id="recommendation-description">Fetch live weather to compare this date range with the crop table.</p>
-          </div>
-          <span class="tag pending" id="crop-count">Not evaluated</span>
-        </div>
-        <div class="candidate-list" id="recommendations" aria-live="polite">
-          <div class="empty">Crop comparisons will appear here after NASA POWER data is retrieved.</div>
-        </div>
+        <h2 id="chart-section-title">Historical Weather Trends</h2>
+        <p>Daily observations for the selected location and date range.</p>
       </div>
-      <aside class="side-stack" aria-label="Other data sources">
-        <article class="pending-card" id="moisture-card">
-          <span class="tag pending" id="moisture-tag">Waiting for data</span>
-          <h3>Soil moisture (modeled)</h3>
-          <div id="moisture-body">
-            <p>Fetch NASA data to see modeled surface and root-zone soil wetness. This is not SMAP satellite data, which requires an Earthdata login.</p>
-          </div>
-        </article>
-        <article class="pending-card" id="usda-card">
-          <span class="tag pending" id="usda-tag">Waiting for data</span>
-          <h3>USDA soil characteristics</h3>
-          <div id="usda-body">
-            <p>Fetch NASA data to look up USDA soil survey properties (texture, organic matter, pH, water capacity) for this point. US locations only. This planner does not estimate or claim field N-P-K levels.</p>
-          </div>
-        </article>
-        <article class="pending-card">
-          <span class="tag warning">Rotation rules pending</span>
-          <h3>Previous crop & nutrients</h3>
-          <p>Previous crop history and validated nutrient / disease-family rules are not part of this first increment. No rotation benefit is inferred from the current data.</p>
-        </article>
-      </aside>
-    </section>
+    </div>
+    <div class="charts">
+      <article class="chart-card">
+        <h3>Daily air temperature</h3>
+        <p>Daily mean, maximum, and minimum (°C)</p>
+        <canvas id="temperature-chart" aria-label="NASA POWER daily temperature chart"></canvas>
+        <div class="chart-legend">
+          <span class="legend-item"><i class="swatch" style="background:#000000"></i>Mean</span>
+          <span class="legend-item"><i class="swatch" style="background:#3ea26e"></i>Maximum</span>
+          <span class="legend-item"><i class="swatch" style="background:#ecd856"></i>Minimum</span>
+        </div>
+      </article>
+      <article class="chart-card">
+        <h3>Daily precipitation</h3>
+        <p>Corrected precipitation (mm/day)</p>
+        <canvas id="precipitation-chart" aria-label="NASA POWER daily precipitation chart"></canvas>
+        <div class="chart-legend"><span class="legend-item"><i class="swatch" style="background:#255b82"></i>PRECTOTCORR</span></div>
+      </article>
+    </div>
+  </section>
 
-    <footer>
-      NASA POWER values are climate observations / estimates for a coordinate, not direct field sensor readings. Soil wetness values are model-derived (MERRA-2), not SMAP measurements. USDA soil values are soil survey map-unit estimates, not measurements of your specific field. Rainfall is displayed separately from crop water demand; it is not treated as irrigation or as total water available. The crop table is unverified and does not include planting windows. Review all agronomic decisions with local extension guidance.
-    </footer>
-  </main>
+  <section class="section" aria-labelledby="risk-title">
+    <div class="section-head">
+      <div>
+        <h2 id="risk-title">Growing-Season Risk Report</h2>
+        <p>Review historical weather patterns and potential environmental concerns for this location.</p>
+      </div>
+      <span class="tag pending" id="risk-status">Waiting for data</span>
+    </div>
+    <div class="metric-grid" id="risk-metrics">
+      <div class="metric"><div class="metric-name">Days above heat threshold</div><div class="metric-value">—</div><div class="metric-detail">Daily maximum temperature</div></div>
+      <div class="metric"><div class="metric-name">Days below cold threshold</div><div class="metric-value">—</div><div class="metric-detail">Daily minimum temperature</div></div>
+      <div class="metric"><div class="metric-name">Longest dry stretch</div><div class="metric-value">—</div><div class="metric-detail">Consecutive days below 1 mm precipitation</div></div>
+      <div class="metric"><div class="metric-name">Total precipitation</div><div class="metric-value">—</div><div class="metric-detail">Accumulated over selected period</div></div>
+    </div>
+    <div class="candidate-list" id="risk-findings" style="margin-top:12px">
+      <div class="empty">Environmental findings will appear here after you generate a report.</div>
+    </div>
+  </section>
 
-  <script>
-    const crops = [
-      { name: "Processing tomato", group: "Summer row crop", kind: "summer", tLow: 18, tHigh: 27, tMid: 22.5, heat: 35, cold: "Tender (about 4°C)", wLow: 500, wHigh: 700, wMid: 600 },
-      { name: "Corn (grain/silage)", group: "Summer row crop", kind: "summer", tLow: 18, tHigh: 32, tMid: 25, heat: 35, cold: "Tender (about 4°C)", wLow: 600, wHigh: 900, wMid: 750 },
-      { name: "Cotton", group: "Summer row crop", kind: "summer", tLow: 20, tHigh: 30, tMid: 25, heat: 38, cold: "Tender (about 10°C)", wLow: 700, wHigh: 1000, wMid: 850 },
-      { name: "Sorghum", group: "Summer row crop", kind: "summer", tLow: 25, tHigh: 32, tMid: 28.5, heat: 38, cold: "Tender (about 8°C)", wLow: 400, wHigh: 600, wMid: 500 },
-      { name: "Sunflower", group: "Summer row crop", kind: "summer", tLow: 20, tHigh: 25, tMid: 22.5, heat: 35, cold: "Hardy seedlings", wLow: 500, wHigh: 800, wMid: 650 },
-      { name: "Safflower", group: "Summer row crop", kind: "summer", tLow: 20, tHigh: 30, tMid: 25, heat: 38, cold: "Hardy early, tender in bloom", wLow: 350, wHigh: 600, wMid: 475 },
-      { name: "Rice", group: "Summer row crop", kind: "summer", tLow: 22, tHigh: 32, tMid: 27, heat: 35, cold: "Tender", wLow: 1000, wHigh: 1400, wMid: 1200 },
-      { name: "Dry beans", group: "Summer row crop", kind: "summer", tLow: 18, tHigh: 25, tMid: 21.5, heat: 32, cold: "Tender (about 5°C)", wLow: 350, wHigh: 500, wMid: 425 },
-      { name: "Sweet potatoes", group: "Summer row crop", kind: "summer", tLow: 21, tHigh: 29, tMid: 25, heat: 35, cold: "Tender (about 10°C)", wLow: 450, wHigh: 650, wMid: 550 },
-      { name: "Cantaloupe / watermelon", group: "Summer row crop", kind: "summer", tLow: 24, tHigh: 30, tMid: 27, heat: 38, cold: "Tender (about 10°C)", wLow: 400, wHigh: 600, wMid: 500 },
-      { name: "Peppers", group: "Summer row crop", kind: "summer", tLow: 20, tHigh: 30, tMid: 25, heat: 35, cold: "Tender (about 10°C)", wLow: 600, wHigh: 900, wMid: 750 },
-      { name: "Winter wheat", group: "Winter small grain / cover", kind: "winter", tLow: 10, tHigh: 24, tMid: 17, heat: 30, cold: "Hardy (to about -10°C)", wLow: 350, wHigh: 550, wMid: 450 },
-      { name: "Barley", group: "Winter small grain / cover", kind: "winter", tLow: 12, tHigh: 25, tMid: 18.5, heat: 30, cold: "Hardy", wLow: 350, wHigh: 500, wMid: 425 },
-      { name: "Oats", group: "Winter small grain / cover", kind: "winter", tLow: 15, tHigh: 25, tMid: 20, heat: 30, cold: "Moderately hardy", wLow: 350, wHigh: 500, wMid: 425 },
-      { name: "Triticale", group: "Winter small grain / cover", kind: "winter", tLow: 10, tHigh: 24, tMid: 17, heat: 30, cold: "Hardy", wLow: 350, wHigh: 500, wMid: 425 },
-      { name: "Rye", group: "Winter small grain / cover", kind: "winter", tLow: 10, tHigh: 22, tMid: 16, heat: 30, cold: "Very hardy", wLow: 300, wHigh: 450, wMid: 375 },
-      { name: "Vetch (cover)", group: "Winter small grain / cover", kind: "winter", tLow: 10, tHigh: 25, tMid: 17.5, heat: 30, cold: "Hardy", wLow: 250, wHigh: 350, wMid: 300 },
-      { name: "Bell bean / fava", group: "Winter small grain / cover", kind: "winter", tLow: 10, tHigh: 22, tMid: 16, heat: 28, cold: "Moderately hardy", wLow: 250, wHigh: 400, wMid: 325 },
-      { name: "Clover", group: "Winter small grain / cover", kind: "winter", tLow: 15, tHigh: 25, tMid: 20, heat: 32, cold: "Moderately hardy", wLow: 400, wHigh: 600, wMid: 500 },
-      { name: "Alfalfa", group: "Vegetable / forage", kind: "vegetable", tLow: 15, tHigh: 30, tMid: 22.5, heat: 38, cold: "Hardy (perennial)", wLow: 1000, wHigh: 1500, wMid: 1250 },
-      { name: "Lettuce", group: "Vegetable / forage", kind: "vegetable", tLow: 15, tHigh: 20, tMid: 17.5, heat: 27, cold: "Moderately hardy", wLow: 250, wHigh: 400, wMid: 325 },
-      { name: "Onions", group: "Vegetable / forage", kind: "vegetable", tLow: 13, tHigh: 24, tMid: 18.5, heat: 32, cold: "Hardy", wLow: 350, wHigh: 550, wMid: 450 },
-      { name: "Garlic", group: "Vegetable / forage", kind: "vegetable", tLow: 13, tHigh: 24, tMid: 18.5, heat: 30, cold: "Hardy", wLow: 350, wHigh: 600, wMid: 475 },
-      { name: "Carrots", group: "Vegetable / forage", kind: "vegetable", tLow: 16, tHigh: 21, tMid: 18.5, heat: 30, cold: "Moderately hardy", wLow: 350, wHigh: 550, wMid: 450 },
-      { name: "Potatoes", group: "Vegetable / forage", kind: "vegetable", tLow: 15, tHigh: 20, tMid: 17.5, heat: 28, cold: "Tender", wLow: 500, wHigh: 700, wMid: 600 },
-      { name: "Almonds", group: "Orchard / vine (does not rotate)", kind: "perennial", tLow: 15, tHigh: 30, tMid: 22.5, heat: 40, cold: "Needs winter chill about 200–700 h", wLow: 1000, wHigh: 1300, wMid: 1150 },
-      { name: "Pistachios", group: "Orchard / vine (does not rotate)", kind: "perennial", tLow: 20, tHigh: 35, tMid: 27.5, heat: 42, cold: "Needs winter chill about 800–1000 h", wLow: 900, wHigh: 1200, wMid: 1050 },
-      { name: "Walnuts", group: "Orchard / vine (does not rotate)", kind: "perennial", tLow: 18, tHigh: 30, tMid: 24, heat: 38, cold: "Needs winter chill about 700–1000 h", wLow: 900, wHigh: 1300, wMid: 1100 },
-      { name: "Grapes", group: "Orchard / vine (does not rotate)", kind: "perennial", tLow: 20, tHigh: 30, tMid: 25, heat: 38, cold: "Dormant in winter", wLow: 500, wHigh: 900, wMid: 700 }
-    ];
+  <section class="section two-panels" aria-label="Additional environmental information">
+    <aside class="side-stack">
+      <article class="pending-card" id="moisture-card">
+        <span class="tag pending" id="moisture-tag">Waiting for data</span>
+        <h3>Modeled soil moisture</h3>
+        <div id="moisture-body"><p>NASA POWER modeled surface and root-zone soil wetness will appear here.</p></div>
+      </article>
+      <article class="pending-card" id="usda-card">
+        <span class="tag pending" id="usda-tag">Waiting for data</span>
+        <h3>USDA soil characteristics</h3>
+        <div id="usda-body"><p>Soil texture, organic matter, pH, and available water capacity will appear here when available.</p></div>
+      </article>
+    </aside>
+    <aside class="side-stack">
+      <article class="pending-card">
+        <span class="tag warning">Planning context</span>
+        <h3>How to use this report</h3>
+        <p>Use these findings to identify questions for your next growing season. Compare the results with field observations, irrigation records, crop growth stages, and local agricultural extension guidance.</p>
+      </article>
+      <article class="pending-card">
+        <span class="tag pending">Not yet included</span>
+        <h3>Historical baseline comparison</h3>
+        <p>This first version summarizes the selected period. It does not yet compare that period with a multi-year climate baseline or predict future weather.</p>
+      </article>
+    </aside>
+  </section>
 
-    const parameterLabels = [
-      ["T2M", "Mean air temperature", "°C"],
-      ["T2M_MAX", "Average daily high", "°C"],
-      ["T2M_MIN", "Average daily low", "°C"],
-      ["PRECTOTCORR", "Accumulated precipitation", "mm"],
-      ["ALLSKY_SFC_SW_DWN", "Amount of solar energy in a day", "kWh/m²/day"],
-      ["RH2M", "Mean relative humidity", "%"],
-      ["GWETTOP", "Surface soil wetness, 0–1 (modeled)", ""],
-      ["GWETROOT", "Root-zone soil wetness, 0–1 (modeled)", ""]
-    ];
-    const form = document.querySelector("#planner-form");
-    const results = document.querySelector("#recommendations");
-    const errorOutput = document.querySelector("#error-message");
-    const submitButton = document.querySelector("#submit-button");
-    const cropSelect = document.querySelector("#crop-select");
-    let lastDailyData = [];
+  <footer>
+    NASA POWER climate data represents estimates for a geographic coordinate, not direct field sensor readings. Soil wetness values are modeled using MERRA-2 and are not SMAP satellite measurements. USDA soil information represents soil survey estimates for a map unit, not measurements of a specific field. Rainfall is not equivalent to irrigation or total water available to crops. Temperature thresholds are user-selected screening values, not universal crop-damage thresholds. Historical conditions do not predict future weather, crop yields, or planting success. Farmers should consult local agricultural extension resources and field measurements when making decisions.
+  </footer>
+</main>
 
-    // Dates cannot be in the future (the server checks against the UTC date).
-    const todayUtc = new Date().toISOString().slice(0, 10);
-    document.querySelector("#start-date").max = todayUtc;
-    document.querySelector("#end-date").max = todayUtc;
+<script>
+  const parameterLabels = [
+    ["T2M", "Mean air temperature", "°C"],
+    ["T2M_MAX", "Average daily high", "°C"],
+    ["T2M_MIN", "Average daily low", "°C"],
+    ["PRECTOTCORR", "Accumulated precipitation", "mm"],
+    ["ALLSKY_SFC_SW_DWN", "Daily solar energy", "kWh/m²/day"],
+    ["RH2M", "Mean relative humidity", "%"],
+    ["GWETTOP", "Surface soil wetness (modeled)", ""],
+    ["GWETROOT", "Root-zone soil wetness (modeled)", ""]
+  ];
 
-    function updateCropOptions() {
-      const selectedName = cropSelect.value;
-      const type = document.querySelector("#crop-type").value;
-      const visibleCrops = crops.filter((crop) =>
-        type === "all" || (type === "perennial" ? crop.kind === "perennial" : crop.kind !== "perennial")
-      );
-      cropSelect.replaceChildren(new Option("Compare all in category", ""));
-      for (const crop of visibleCrops) {
-        cropSelect.add(new Option(crop.name, crop.name));
+  const form = document.querySelector("#planner-form");
+  const riskFindings = document.querySelector("#risk-findings");
+  const errorOutput = document.querySelector("#error-message");
+  const submitButton = document.querySelector("#submit-button");
+  let lastDailyData = [];
+
+  const todayUtc = new Date().toISOString().slice(0, 10);
+  document.querySelector("#start-date").max = todayUtc;
+  document.querySelector("#end-date").max = todayUtc;
+
+  function renderMetrics(summary) {
+    const container = document.querySelector("#metrics");
+    container.replaceChildren();
+    for (const [parameter, label, displayUnit] of parameterLabels) {
+      const datum = summary[parameter];
+      const card = document.createElement("article");
+      card.className = "metric";
+      const name = document.createElement("div");
+      name.className = "metric-name";
+      name.textContent = label;
+      const value = document.createElement("div");
+      value.className = "metric-value";
+      if (!datum || datum.value === null || datum.value === undefined) {
+        value.textContent = "N/A";
+      } else {
+        const digits = parameter === "RH2M" ? 1 : parameter.startsWith("GWET") ? 3 : 2;
+        value.textContent = `${Number(datum.value).toFixed(digits)} ${displayUnit}`.trim();
       }
-      if (visibleCrops.some((crop) => crop.name === selectedName)) {
-        cropSelect.value = selectedName;
-      }
+      const detail = document.createElement("div");
+      detail.className = "metric-detail";
+      detail.textContent = datum
+        ? `${datum.days_available} valid day${datum.days_available === 1 ? "" : "s"} · ${parameter}`
+        : `${parameter} · no data`;
+      card.append(name, value, detail);
+      container.append(card);
     }
-    document.querySelector("#crop-type").addEventListener("change", updateCropOptions);
-    updateCropOptions();
+  }
 
-    function renderMetrics(summary) {
-      const container = document.querySelector("#metrics");
-      container.replaceChildren();
-      for (const [parameter, label, displayUnit] of parameterLabels) {
-        const datum = summary[parameter];
-        const card = document.createElement("article");
-        card.className = "metric";
-        const name = document.createElement("div");
-        name.className = "metric-name";
-        name.textContent = label;
-        const value = document.createElement("div");
-        value.className = "metric-value";
-        if (!datum || datum.value === null) {
-          value.textContent = "N/A";
-        } else {
-          const digits = parameter === "RH2M" ? 1 : parameter.startsWith("GWET") ? 3 : 2;
-          const number = Number(datum.value).toFixed(digits);
-          value.textContent = `${number} ${displayUnit}`.trim();
-        }
-        const detail = document.createElement("div");
-        detail.className = "metric-detail";
-        detail.textContent = datum
-          ? `${datum.days_available} valid day${datum.days_available === 1 ? "" : "s"} · ${parameter}`
-          : `${parameter} · no data`;
-        card.append(name, value, detail);
-        container.append(card);
-      }
+  function para(text) {
+    const p = document.createElement("p");
+    p.textContent = text;
+    return p;
+  }
+
+  function setCard(prefix, tagText, tagClass, nodes) {
+    const tag = document.querySelector(`#${prefix}-tag`);
+    tag.textContent = tagText;
+    tag.className = `tag ${tagClass}`.trim();
+    document.querySelector(`#${prefix}-card`).classList.toggle("live", tagClass === "");
+    document.querySelector(`#${prefix}-body`).replaceChildren(...nodes);
+  }
+
+  function renderSoilMoisture(summary) {
+    const top = summary.GWETTOP;
+    const root = summary.GWETROOT;
+    const has = datum => datum && datum.value !== null && datum.value !== undefined;
+    if (!has(top) && !has(root)) {
+      setCard("moisture", "Unavailable", "warning", [para("NASA POWER returned no soil wetness values for this request.")]);
+      return;
     }
+    const show = datum => has(datum) ? Number(datum.value).toFixed(3) : "N/A";
+    setCard("moisture", "Modeled · not SMAP", "", [
+      para(`Surface soil wetness: ${show(top)} · Root zone: ${show(root)}`),
+      para("Period averages on a 0–1 scale. These are NASA POWER model estimates (MERRA-2), not SMAP satellite measurements.")
+    ]);
+  }
 
-    function para(text) {
-      const p = document.createElement("p");
-      p.textContent = text;
-      return p;
+  function formatNumber(value, digits) {
+    if (value === null || value === undefined || value === "") return "—";
+    const number = Number(value);
+    return Number.isFinite(number) ? number.toFixed(digits) : "—";
+  }
+
+  function renderUsdaSoil(data) {
+    if (!data.horizons || !data.horizons.length) {
+      setCard("usda", "Unavailable", "warning", [para("No USDA soil horizon information was returned for this point.")]);
+      return;
     }
-
-    // Updates one of the side cards: prefix is "moisture" or "usda".
-    function setCard(prefix, tagText, tagClass, nodes) {
-      const tag = document.querySelector(`#${prefix}-tag`);
-      tag.textContent = tagText;
-      tag.className = `tag ${tagClass}`.trim();
-      document.querySelector(`#${prefix}-card`).classList.toggle("live", tagClass === "");
-      document.querySelector(`#${prefix}-body`).replaceChildren(...nodes);
+    const groups = new Map();
+    for (const horizon of data.horizons) {
+      const key = `${horizon.compname}|${horizon.comppct_r}`;
+      if (!groups.has(key)) groups.set(key, { name: horizon.compname, pct: horizon.comppct_r, rows: [] });
+      groups.get(key).rows.push(horizon);
     }
-
-    function renderSoilMoisture(summary) {
-      const top = summary.GWETTOP;
-      const root = summary.GWETROOT;
-      const has = (datum) => datum && datum.value !== null;
-      if (!has(top) && !has(root)) {
-        setCard("moisture", "Unavailable", "warning", [
-          para("NASA POWER returned no soil wetness values for this request.")
-        ]);
-        return;
-      }
-      const show = (datum) => (has(datum) ? Number(datum.value).toFixed(3) : "N/A");
-      setCard("moisture", "Modeled · not SMAP", "", [
-        para(`Surface soil wetness: ${show(top)} · Root zone: ${show(root)}`),
-        para("Period averages on a 0–1 scale (0 = dry, 1 = saturated). These are NASA POWER model estimates (MERRA-2), not SMAP satellite measurements.")
-      ]);
+    const components = [...groups.values()];
+    const main = components[0];
+    const table = document.createElement("table");
+    table.className = "soil-table";
+    const head = table.createTHead().insertRow();
+    for (const heading of ["Depth (cm)", "Sand %", "Silt %", "Clay %", "pH", "OM %", "AWC"]) {
+      const th = document.createElement("th");
+      th.textContent = heading;
+      head.append(th);
     }
-
-    function formatNumber(value, digits) {
-      if (value === null || value === undefined || value === "") return "—";
-      const number = Number(value);
-      return Number.isFinite(number) ? number.toFixed(digits) : "—";
-    }
-
-    function renderUsdaSoil(data) {
-      const groups = new Map();
-      for (const horizon of data.horizons) {
-        const key = `${horizon.compname}|${horizon.comppct_r}`;
-        if (!groups.has(key)) groups.set(key, { name: horizon.compname, pct: horizon.comppct_r, rows: [] });
-        groups.get(key).rows.push(horizon);
-      }
-      const components = [...groups.values()];
-      const main = components[0];
-
-      const table = document.createElement("table");
-      table.className = "soil-table";
-      const head = table.createTHead().insertRow();
-      for (const heading of ["Depth (cm)", "Sand %", "Silt %", "Clay %", "pH", "OM %", "AWC"]) {
-        const th = document.createElement("th");
-        th.textContent = heading;
-        head.append(th);
-      }
-      const bodyEl = table.createTBody();
-      for (const row of main.rows) {
-        const sand = row.sandtotal_r === null || row.sandtotal_r === "" ? null : Number(row.sandtotal_r);
-        const clay = row.claytotal_r === null || row.claytotal_r === "" ? null : Number(row.claytotal_r);
-        const silt = Number.isFinite(sand) && Number.isFinite(clay) ? 100 - sand - clay : null;
-        const cells = [
-          `${formatNumber(row.hzdept_r, 0)}–${formatNumber(row.hzdepb_r, 0)}`,
-          formatNumber(sand, 0),
-          formatNumber(silt, 0),
-          formatNumber(clay, 0),
-          formatNumber(row.ph1to1h2o_r, 1),
-          formatNumber(row.om_r, 1),
-          formatNumber(row.awc_r, 2)
-        ];
-        const tr = bodyEl.insertRow();
-        for (const text of cells) tr.insertCell().textContent = text;
-      }
-      const wrap = document.createElement("div");
-      wrap.className = "soil-table-wrap";
-      wrap.append(table);
-
-      const nodes = [
-        para(`Dominant soil component: ${main.name} (${main.pct}% of the map unit).`),
-        wrap
+    const bodyEl = table.createTBody();
+    for (const row of main.rows) {
+      const sand = row.sandtotal_r === null || row.sandtotal_r === "" ? null : Number(row.sandtotal_r);
+      const clay = row.claytotal_r === null || row.claytotal_r === "" ? null : Number(row.claytotal_r);
+      const silt = Number.isFinite(sand) && Number.isFinite(clay) ? 100 - sand - clay : null;
+      const cells = [
+        `${formatNumber(row.hzdept_r, 0)}–${formatNumber(row.hzdepb_r, 0)}`,
+        formatNumber(sand, 0), formatNumber(silt, 0), formatNumber(clay, 0),
+        formatNumber(row.ph1to1h2o_r, 1), formatNumber(row.om_r, 1), formatNumber(row.awc_r, 2)
       ];
-      const others = components.slice(1).map((item) => `${item.name} (${item.pct}%)`);
-      if (others.length) nodes.push(para(`Other major components: ${others.join(", ")}.`));
-      nodes.push(para("OM = organic matter; AWC = available water capacity (cm of water per cm of soil). USDA soil survey estimates for the map unit at this point, not measurements of your field. No N-P-K levels are provided."));
-      setCard("usda", "USDA soil survey", "", nodes);
+      const tr = bodyEl.insertRow();
+      for (const cellText of cells) tr.insertCell().textContent = cellText;
     }
+    const wrap = document.createElement("div");
+    wrap.className = "soil-table-wrap";
+    wrap.append(table);
+    const nodes = [
+      para(`Dominant soil component: ${main.name} (${main.pct}% of the map unit).`),
+      wrap
+    ];
+    const others = components.slice(1).map(item => `${item.name} (${item.pct}%)`);
+    if (others.length) nodes.push(para(`Other major components: ${others.join(", ")}.`));
+    nodes.push(para("OM = organic matter; AWC = available water capacity. USDA soil survey estimates for the map unit at this point, not measurements of your field. No N-P-K levels are provided."));
+    setCard("usda", "USDA soil survey", "", nodes);
+  }
 
-    async function loadSoil(latitude, longitude) {
-      const query = new URLSearchParams({ latitude, longitude });
-      const response = await fetch(`/api/soil?${query.toString()}`, { headers: { Accept: "application/json" } });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || `Soil request failed (${response.status}).`);
-      return data;
-    }
+  async function loadSoil(latitude, longitude) {
+    const query = new URLSearchParams({ latitude, longitude });
+    const response = await fetch(`/api/soil?${query.toString()}`, { headers: { Accept: "application/json" } });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || `Soil request failed (${response.status}).`);
+    return data;
+  }
 
-    function drawEmpty(canvas, message) {
-      const rect = canvas.getBoundingClientRect();
-      const ratio = window.devicePixelRatio || 1;
-      canvas.width = Math.max(1, Math.round(rect.width * ratio));
-      canvas.height = Math.round(205 * ratio);
-      const context = canvas.getContext("2d");
-      context.scale(ratio, ratio);
-      context.fillStyle = "#77857a";
-      context.font = "13px system-ui, sans-serif";
-      context.textAlign = "center";
-      context.fillText(message, rect.width / 2, 102);
-    }
+  function drawEmpty(canvas, message) {
+    const rect = canvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    canvas.width = Math.max(1, Math.round(rect.width * ratio));
+    canvas.height = Math.round(205 * ratio);
+    const context = canvas.getContext("2d");
+    context.scale(ratio, ratio);
+    context.fillStyle = "#77857a";
+    context.font = "13px system-ui, sans-serif";
+    context.textAlign = "center";
+    context.fillText(message, rect.width / 2, 102);
+  }
 
-    function drawTemperatureChart(daily) {
-      const canvas = document.querySelector("#temperature-chart");
-      const rect = canvas.getBoundingClientRect();
-      const ratio = window.devicePixelRatio || 1;
-      const width = Math.max(1, rect.width);
-      const height = 205;
-      canvas.width = Math.round(width * ratio);
-      canvas.height = Math.round(height * ratio);
-      const ctx = canvas.getContext("2d");
-      ctx.scale(ratio, ratio);
-      const series = [
-        { key: "T2M", color: "#000000" },
-        { key: "T2M_MAX", color: "#3ea26e" },
-        { key: "T2M_MIN", color: "#ecd856" }
-      ];
-      const values = daily.flatMap((day) => series.map((line) => day[line.key]).filter((value) => value !== null && Number.isFinite(value)));
-      if (!values.length) {
-        drawEmpty(canvas, "No valid temperature measurements");
-        return;
-      }
-      let minimum = Math.min(...values);
-      let maximum = Math.max(...values);
-      if (minimum === maximum) { minimum -= 1; maximum += 1; }
-      const pad = { left: 34, right: 8, top: 10, bottom: 24 };
-      const plotWidth = width - pad.left - pad.right;
-      const plotHeight = height - pad.top - pad.bottom;
-      const y = (value) => pad.top + (maximum - value) / (maximum - minimum) * plotHeight;
-      ctx.font = "10px system-ui, sans-serif";
-      ctx.textAlign = "right";
-      ctx.textBaseline = "middle";
-      for (let tick = 0; tick <= 3; tick += 1) {
-        const value = minimum + (maximum - minimum) * tick / 3;
-        const yy = pad.top + plotHeight * tick / 3;
-        ctx.strokeStyle = "#e7ece5";
-        ctx.beginPath();
-        ctx.moveTo(pad.left, yy);
-        ctx.lineTo(width - pad.right, yy);
-        ctx.stroke();
-        ctx.fillStyle = "#829087";
-        ctx.fillText(value.toFixed(0), pad.left - 5, yy);
-      }
-      series.forEach((line) => {
-        ctx.strokeStyle = line.color;
-        ctx.lineWidth = 1.8;
-        ctx.beginPath();
-        let started = false;
-        daily.forEach((day, index) => {
-          const value = day[line.key];
-          if (value === null || !Number.isFinite(value)) {
-            started = false;
-            return;
-          }
-          const x = pad.left + (daily.length < 2 ? plotWidth / 2 : index / (daily.length - 1) * plotWidth);
-          if (started) ctx.lineTo(x, y(value));
-          else { ctx.moveTo(x, y(value)); started = true; }
-        });
-        ctx.stroke();
-      });
-      ctx.fillStyle = "#829087";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "alphabetic";
-      if (daily.length) ctx.fillText(daily[0].date, pad.left, height - 5);
-      if (daily.length > 1) {
-        ctx.textAlign = "right";
-        ctx.fillText(daily[daily.length - 1].date, width - pad.right, height - 5);
-      }
-    }
-
-    function drawPrecipitationChart(daily) {
-      const canvas = document.querySelector("#precipitation-chart");
-      const rect = canvas.getBoundingClientRect();
-      const ratio = window.devicePixelRatio || 1;
-      const width = Math.max(1, rect.width);
-      const height = 205;
-      canvas.width = Math.round(width * ratio);
-      canvas.height = Math.round(height * ratio);
-      const ctx = canvas.getContext("2d");
-      ctx.scale(ratio, ratio);
-      const values = daily.map((day) => day.PRECTOTCORR).filter((value) => value !== null && Number.isFinite(value));
-      if (!values.length) {
-        drawEmpty(canvas, "No valid precipitation measurements");
-        return;
-      }
-      const maximum = Math.max(...values, 1);
-      const pad = { left: 34, right: 8, top: 10, bottom: 24 };
-      const plotWidth = width - pad.left - pad.right;
-      const plotHeight = height - pad.top - pad.bottom;
+  function drawTemperatureChart(daily) {
+    const canvas = document.querySelector("#temperature-chart");
+    const rect = canvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    const width = Math.max(1, rect.width);
+    const height = 205;
+    canvas.width = Math.round(width * ratio);
+    canvas.height = Math.round(height * ratio);
+    const ctx = canvas.getContext("2d");
+    ctx.scale(ratio, ratio);
+    const series = [
+      { key: "T2M", color: "#000000" },
+      { key: "T2M_MAX", color: "#3ea26e" },
+      { key: "T2M_MIN", color: "#ecd856" }
+    ];
+    const values = daily.flatMap(day => series.map(line => day[line.key]).filter(value => value !== null && Number.isFinite(value)));
+    if (!values.length) { drawEmpty(canvas, "No valid temperature measurements"); return; }
+    let minimum = Math.min(...values);
+    let maximum = Math.max(...values);
+    if (minimum === maximum) { minimum -= 1; maximum += 1; }
+    const pad = { left: 34, right: 8, top: 10, bottom: 24 };
+    const plotWidth = width - pad.left - pad.right;
+    const plotHeight = height - pad.top - pad.bottom;
+    const y = value => pad.top + (maximum - value) / (maximum - minimum) * plotHeight;
+    ctx.font = "10px system-ui, sans-serif";
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+    for (let tick = 0; tick <= 3; tick++) {
+      const value = minimum + (maximum - minimum) * tick / 3;
+      const yy = pad.top + plotHeight * tick / 3;
       ctx.strokeStyle = "#e7ece5";
+      ctx.beginPath(); ctx.moveTo(pad.left, yy); ctx.lineTo(width - pad.right, yy); ctx.stroke();
+      ctx.fillStyle = "#829087"; ctx.fillText(value.toFixed(0), pad.left - 5, yy);
+    }
+    series.forEach(line => {
+      ctx.strokeStyle = line.color;
+      ctx.lineWidth = line.key === "T2M" ? 2.8 : 1.8;
       ctx.beginPath();
-      ctx.moveTo(pad.left, height - pad.bottom);
-      ctx.lineTo(width - pad.right, height - pad.bottom);
-      ctx.stroke();
-      const slot = plotWidth / Math.max(daily.length, 1);
-      const barWidth = Math.max(1, Math.min(7, slot * .72));
+      let started = false;
       daily.forEach((day, index) => {
-        const value = day.PRECTOTCORR;
-        if (value === null || !Number.isFinite(value)) return;
-        const barHeight = Math.max(1, value / maximum * plotHeight);
-        const x = pad.left + index * slot + (slot - barWidth) / 2;
-        ctx.fillStyle = "#255b82";
-        ctx.fillRect(x, height - pad.bottom - barHeight, barWidth, barHeight);
+        const value = day[line.key];
+        if (value === null || !Number.isFinite(value)) { started = false; return; }
+        const x = pad.left + (daily.length < 2 ? plotWidth / 2 : index / (daily.length - 1) * plotWidth);
+        if (started) ctx.lineTo(x, y(value)); else { ctx.moveTo(x, y(value)); started = true; }
       });
-      ctx.fillStyle = "#829087";
-      ctx.font = "10px system-ui, sans-serif";
-      ctx.textAlign = "left";
-      ctx.fillText(daily[0].date, pad.left, height - 5);
-      if (daily.length > 1) {
-        ctx.textAlign = "right";
-        ctx.fillText(daily[daily.length - 1].date, width - pad.right, height - 5);
-      }
-    }
-
-    function redrawCharts() {
-      if (!lastDailyData.length) return;
-      drawTemperatureChart(lastDailyData);
-      drawPrecipitationChart(lastDailyData);
-    }
-    window.addEventListener("resize", redrawCharts);
-
-    function seasonRank(crop, season) {
-      if (crop.kind === "perennial") return 3;
-      if (season === "winter") {
-        if (crop.kind === "winter") return 0;
-        if (crop.kind === "vegetable" && crop.tMid <= 20) return 1;
-        return 2;
-      }
-      if (season === "summer") {
-        if (crop.kind === "summer") return 0;
-        if (crop.kind === "vegetable" && crop.tMid >= 21) return 1;
-        return 2;
-      }
-      return 0;
-    }
-
-    function seasonLabel(crop, season) {
-      if (crop.kind === "perennial") return "Perennial · not a rotation crop";
-      if (season === "winter") {
-        if (crop.kind === "winter") return "Winter / cover group";
-        if (crop.kind === "vegetable" && crop.tMid <= 20) return "Cooler-temperature option";
-        return "Season not indicated by crop group";
-      }
-      if (season === "summer") {
-        if (crop.kind === "summer") return "Summer row-crop group";
-        if (crop.kind === "vegetable" && crop.tMid >= 21) return "Warmer-temperature option";
-        return "Season not indicated by crop group";
-      }
-      return "Planting window not in workbook";
-    }
-
-    function temperatureDistance(crop, temperature) {
-      if (temperature === null) return 0;
-      if (temperature < crop.tLow) return crop.tLow - temperature;
-      if (temperature > crop.tHigh) return temperature - crop.tHigh;
-      return 0;
-    }
-
-    function makeDatum(titleText, valueText) {
-      const wrapper = document.createElement("div");
-      wrapper.className = "datum";
-      const title = document.createElement("strong");
-      title.textContent = titleText;
-      wrapper.append(title, document.createTextNode(valueText));
-      return wrapper;
-    }
-
-    function renderCrop(crop, season, meanTemperature, daily) {
-      const article = document.createElement("article");
-      article.className = "crop-card";
-      const top = document.createElement("div");
-      top.className = "crop-top";
-      const titleWrap = document.createElement("div");
-      const title = document.createElement("h3");
-      title.textContent = crop.name;
-      const group = document.createElement("span");
-      group.className = "crop-group";
-      group.textContent = crop.group;
-      titleWrap.append(title, group);
-      const rank = seasonRank(crop, season);
-      const badge = document.createElement("span");
-      badge.className = `badge${rank >= 2 ? " caution" : ""}`;
-      badge.textContent = seasonLabel(crop, season);
-      top.append(titleWrap, badge);
-
-      const temperatureFit = meanTemperature === null
-        ? "Temperature data unavailable" 
-        : meanTemperature >= crop.tLow && meanTemperature <= crop.tHigh
-          ? "Observed average is within optimal range"
-          : `${temperatureDistance(crop, meanTemperature).toFixed(1)}°C outside optimal range`;
-      const hotDays = daily.filter((day) => day.T2M_MAX !== null && day.T2M_MAX > crop.heat).length;
-      const heatFit = hotDays
-        ? `${hotDays} day${hotDays === 1 ? "" : "s"} above draft heat threshold`
-        : "No recorded daily high above draft threshold";
-      const info = document.createElement("div");
-      info.className = "crop-info";
-      info.append(
-        makeDatum("Crop's optimal daily temperature", `${crop.tLow}–${crop.tHigh}°C`),
-        makeDatum("Observed period mean", temperatureFit),
-        makeDatum("Approx. seasonal crop water use", `${crop.wLow}–${crop.wHigh} mm`),
-        makeDatum("Heat comparison", heatFit),
-        makeDatum("Cold / winter note", crop.cold)
-      );
-      const reason = document.createElement("p");
-      reason.className = "reason";
-      reason.textContent = `Why it appears: ${seasonLabel(crop, season)}; ${temperatureFit.toLowerCase()}. Rainfall is reported separately and is not assumed to meet this crop's water needs.`;
-      article.append(top, info, reason);
-      return article;
-    }
-
-    function renderRecommendations(data) {
-      const season = document.querySelector("#season").value;
-      const type = document.querySelector("#crop-type").value;
-      const selectedCrop = cropSelect.value;
-      const meanTemperature = data.summary.T2M && data.summary.T2M.value !== null
-        ? Number(data.summary.T2M.value)
-        : null;
-      let candidates = crops.filter((crop) => {
-        const categoryMatches = type === "all" ||
-          (type === "perennial" ? crop.kind === "perennial" : crop.kind !== "perennial");
-        return categoryMatches && (!selectedCrop || crop.name === selectedCrop);
-      });
-      candidates.sort((a, b) => {
-        const bySeason = seasonRank(a, season) - seasonRank(b, season);
-        if (bySeason) return bySeason;
-        return temperatureDistance(a, meanTemperature) - temperatureDistance(b, meanTemperature);
-      });
-
-      results.replaceChildren();
-      for (const crop of candidates) results.append(renderCrop(crop, season, meanTemperature, data.daily));
-      document.querySelector("#crop-count").textContent = `${candidates.length} candidate${candidates.length === 1 ? "" : "s"}`;
-      const seasonName = season.charAt(0).toUpperCase() + season.slice(1);
-      document.querySelector("#recommendation-description").textContent =
-        `${seasonName} candidates ordered by broad crop group and observed temperature fit. This is not a yield or planting-date prediction.`;
-    }
-
-    function renderSourceNote(data) {
-      const note = document.querySelector("#source-note");
-      const warningText = data.warnings.length ? ` ${data.warnings.join(" ")}` : "";
-      note.textContent =
-        `${data.source} · ${data.location.latitude}, ${data.location.longitude} · ${data.date_range.start} to ${data.date_range.end} · Retrieved ${new Date(data.fetched_at).toLocaleString()}.${warningText}`;
-      document.querySelector("#weather-description").textContent =
-        `Observed daily weather summarized for ${data.date_range.start} through ${data.date_range.end}.`;
-    }
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      errorOutput.classList.remove("visible");
-      const latitude = document.querySelector("#latitude").value;
-      const longitude = document.querySelector("#longitude").value;
-      const start = document.querySelector("#start-date").value;
-      const end = document.querySelector("#end-date").value;
-      if (start > end) {
-        errorOutput.textContent = "Start date must be on or before end date.";
-        errorOutput.classList.add("visible");
-        return;
-      }
-      if (end > todayUtc || start > todayUtc) {
-        errorOutput.textContent = `Dates cannot be in the future. The latest allowed date is ${todayUtc}.`;
-        errorOutput.classList.add("visible");
-        return;
-      }
-
-      submitButton.disabled = true;
-      submitButton.textContent = "Retrieving NASA data…";
-      document.querySelector("#weather-status").textContent = "Fetching live data";
-      document.querySelector("#weather-status").className = "tag warning";
-      document.querySelector("#source-note").textContent = "Loading NASA POWER data for this request…";
-      document.querySelector("#weather-description").textContent = "Waiting for the selected location and date range.";
-      document.querySelector("#crop-count").textContent = "Loading";
-      document.querySelector("#recommendation-description").textContent = "Waiting for live measurements.";
-      results.replaceChildren();
-      const loading = document.createElement("div");
-      loading.className = "empty";
-      loading.textContent = "Retrieving daily observations from NASA POWER…";
-      results.append(loading);
-      lastDailyData = [];
-      renderMetrics({});
-      drawEmpty(document.querySelector("#temperature-chart"), "Waiting for NASA data");
-      drawEmpty(document.querySelector("#precipitation-chart"), "Waiting for NASA data");
-      setCard("moisture", "Loading", "pending", [para("Retrieving modeled soil wetness from NASA POWER…")]);
-      setCard("usda", "Loading", "pending", [para("Looking up USDA soil survey data for this point…")]);
-
-      // The USDA lookup runs in parallel and does not depend on the dates.
-      loadSoil(latitude, longitude)
-        .then(renderUsdaSoil)
-        .catch((error) => {
-          setCard("usda", "Unavailable", "warning", [
-            para(error.message || "Could not retrieve USDA soil data.")
-          ]);
-        });
-
-      try {
-        const query = new URLSearchParams({ latitude, longitude, start, end });
-        const response = await fetch(`/api/power?${query.toString()}`, { headers: { Accept: "application/json" } });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || `Request failed (${response.status}).`);
-
-        renderMetrics(data.summary);
-        renderSourceNote(data);
-        renderSoilMoisture(data.summary);
-        lastDailyData = data.daily;
-        redrawCharts();
-        renderRecommendations(data);
-        document.querySelector("#weather-status").textContent = "NASA data loaded";
-        document.querySelector("#weather-status").className = "tag";
-      } catch (error) {
-        errorOutput.textContent = error.message || "Could not retrieve NASA POWER data. Please try again.";
-        errorOutput.classList.add("visible");
-        document.querySelector("#weather-status").textContent = "Request failed";
-        document.querySelector("#weather-status").className = "tag warning";
-        setCard("moisture", "Unavailable", "warning", [para("Soil wetness could not be retrieved because the NASA POWER request failed.")]);
-      } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = "Fetch NASA data & evaluate";
-      }
+      ctx.stroke();
     });
-  </script>
+    ctx.fillStyle = "#829087"; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    if (daily.length) ctx.fillText(daily[0].date, pad.left, height - 5);
+    if (daily.length > 1) { ctx.textAlign = "right"; ctx.fillText(daily[daily.length - 1].date, width - pad.right, height - 5); }
+  }
+
+  function drawPrecipitationChart(daily) {
+    const canvas = document.querySelector("#precipitation-chart");
+    const rect = canvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    const width = Math.max(1, rect.width);
+    const height = 205;
+    canvas.width = Math.round(width * ratio);
+    canvas.height = Math.round(height * ratio);
+    const ctx = canvas.getContext("2d");
+    ctx.scale(ratio, ratio);
+    const values = daily.map(day => day.PRECTOTCORR).filter(value => value !== null && Number.isFinite(value));
+    if (!values.length) { drawEmpty(canvas, "No valid precipitation measurements"); return; }
+    const maximum = Math.max(...values, 1);
+    const pad = { left: 34, right: 8, top: 10, bottom: 24 };
+    const plotWidth = width - pad.left - pad.right;
+    const plotHeight = height - pad.top - pad.bottom;
+    ctx.strokeStyle = "#e7ece5";
+    ctx.beginPath(); ctx.moveTo(pad.left, height - pad.bottom); ctx.lineTo(width - pad.right, height - pad.bottom); ctx.stroke();
+    const slot = plotWidth / Math.max(daily.length, 1);
+    const barWidth = Math.max(1, Math.min(7, slot * .72));
+    daily.forEach((day, index) => {
+      const value = day.PRECTOTCORR;
+      if (value === null || !Number.isFinite(value)) return;
+      const barHeight = Math.max(1, value / maximum * plotHeight);
+      const x = pad.left + index * slot + (slot - barWidth) / 2;
+      ctx.fillStyle = "#255b82";
+      ctx.fillRect(x, height - pad.bottom - barHeight, barWidth, barHeight);
+    });
+    ctx.fillStyle = "#829087"; ctx.font = "10px system-ui, sans-serif"; ctx.textAlign = "left";
+    if (daily.length) ctx.fillText(daily[0].date, pad.left, height - 5);
+    if (daily.length > 1) { ctx.textAlign = "right"; ctx.fillText(daily[daily.length - 1].date, width - pad.right, height - 5); }
+  }
+
+  function redrawCharts() {
+    if (!lastDailyData.length) return;
+    drawTemperatureChart(lastDailyData);
+    drawPrecipitationChart(lastDailyData);
+  }
+  window.addEventListener("resize", redrawCharts);
+
+  function renderRiskReport(data) {
+    const daily = data.daily || [];
+    const heatThreshold = Number(document.querySelector("#heat-threshold").value);
+    const coldThreshold = Number(document.querySelector("#cold-threshold").value);
+
+    const validHighs = daily.filter(day => Number.isFinite(day.T2M_MAX));
+    const validLows = daily.filter(day => Number.isFinite(day.T2M_MIN));
+    const validRain = daily.filter(day => Number.isFinite(day.PRECTOTCORR));
+
+    const heatDays = validHighs.filter(day => day.T2M_MAX > heatThreshold).length;
+    const coldDays = validLows.filter(day => day.T2M_MIN < coldThreshold).length;
+    const totalRain = validRain.reduce((total, day) => total + day.PRECTOTCORR, 0);
+
+    // A missing precipitation observation breaks the dry-stretch count.
+    let currentDryStretch = 0;
+    let longestDryStretch = 0;
+    for (const day of daily) {
+      if (Number.isFinite(day.PRECTOTCORR) && day.PRECTOTCORR < 1) {
+        currentDryStretch++;
+        longestDryStretch = Math.max(longestDryStretch, currentDryStretch);
+      } else {
+        currentDryStretch = 0;
+      }
+    }
+
+    const metrics = [
+      ["Days above heat threshold", `${heatDays}`, `Daily high above ${heatThreshold}°C · ${validHighs.length} valid days`],
+      ["Days below cold threshold", `${coldDays}`, `Daily low below ${coldThreshold}°C · ${validLows.length} valid days`],
+      ["Longest dry stretch", `${longestDryStretch} days`, "Consecutive valid days below 1 mm precipitation"],
+      ["Total precipitation", `${totalRain.toFixed(1)} mm`, `${validRain.length} days with valid rainfall data`]
+    ];
+    const container = document.querySelector("#risk-metrics");
+    container.replaceChildren();
+    for (const [label, valueText, detailText] of metrics) {
+      const card = document.createElement("article"); card.className = "metric";
+      const name = document.createElement("div"); name.className = "metric-name"; name.textContent = label;
+      const value = document.createElement("div"); value.className = "metric-value"; value.textContent = valueText;
+      const detail = document.createElement("div"); detail.className = "metric-detail"; detail.textContent = detailText;
+      card.append(name, value, detail); container.append(card);
+    }
+
+    const findings = [];
+    if (validHighs.length) {
+      findings.push(heatDays
+        ? `${heatDays} of ${validHighs.length} valid days had a daily high above your selected heat screening threshold (${heatThreshold}°C). Review whether those days overlapped with sensitive crop growth stages.`
+        : `No valid daily highs exceeded your selected heat screening threshold (${heatThreshold}°C) during this period.`);
+    } else {
+      findings.push("No valid daily maximum-temperature measurements were available, so heat-screening days could not be calculated.");
+    }
+    if (validLows.length) {
+      findings.push(coldDays
+        ? `${coldDays} of ${validLows.length} valid days had a daily low below your selected cold screening threshold (${coldThreshold}°C). Consider whether cold-sensitive crops or growth stages were present.`
+        : `No valid daily lows fell below your selected cold screening threshold (${coldThreshold}°C) during this period.`);
+    } else {
+      findings.push("No valid daily minimum-temperature measurements were available, so cold-screening days could not be calculated.");
+    }
+    if (validRain.length) {
+      findings.push(`The longest run of consecutive valid days with less than 1 mm of precipitation was ${longestDryStretch} day(s). Rainfall alone does not show how much irrigation was applied or how much water was available to crops.`);
+    } else {
+      findings.push("No valid precipitation measurements were available, so dry stretches and total precipitation could not be calculated.");
+    }
+    if (validHighs.length < daily.length || validLows.length < daily.length || validRain.length < daily.length) {
+      findings.push("Some daily measurements were unavailable. The report shows valid-day counts so missing values are not treated as zero.");
+    }
+
+    riskFindings.replaceChildren();
+    for (const finding of findings) {
+      const card = document.createElement("article"); card.className = "crop-card";
+      const paragraph = document.createElement("p"); paragraph.className = "reason"; paragraph.textContent = finding;
+      card.append(paragraph); riskFindings.append(card);
+    }
+    const status = document.querySelector("#risk-status");
+    status.textContent = "Report generated";
+    status.className = "tag";
+  }
+
+  function renderSourceNote(data) {
+    const warningText = data.warnings && data.warnings.length ? ` ${data.warnings.join(" ")}` : "";
+    document.querySelector("#source-note").textContent =
+      `${data.source} · ${data.location.latitude}, ${data.location.longitude} · ${data.date_range.start} to ${data.date_range.end} · Retrieved ${new Date(data.fetched_at).toLocaleString()}.${warningText}`;
+    document.querySelector("#weather-description").textContent =
+      `Daily environmental data summarized for ${data.date_range.start} through ${data.date_range.end}.`;
+  }
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+    errorOutput.classList.remove("visible");
+
+    const latitude = document.querySelector("#latitude").value;
+    const longitude = document.querySelector("#longitude").value;
+    const start = document.querySelector("#start-date").value;
+    const end = document.querySelector("#end-date").value;
+    const heatThreshold = document.querySelector("#heat-threshold").value;
+    const coldThreshold = document.querySelector("#cold-threshold").value;
+
+    if (start > end) {
+      errorOutput.textContent = "Start date must be on or before end date.";
+      errorOutput.classList.add("visible");
+      return;
+    }
+    if (end > todayUtc || start > todayUtc) {
+      errorOutput.textContent = `Dates cannot be in the future. The latest allowed date is ${todayUtc}.`;
+      errorOutput.classList.add("visible");
+      return;
+    }
+    if (!Number.isFinite(Number(heatThreshold)) || !Number.isFinite(Number(coldThreshold))) {
+      errorOutput.textContent = "Enter valid numeric heat and cold thresholds.";
+      errorOutput.classList.add("visible");
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Generating report…";
+    const weatherStatus = document.querySelector("#weather-status");
+    weatherStatus.textContent = "Fetching live data";
+    weatherStatus.className = "tag warning";
+    document.querySelector("#risk-status").textContent = "Generating report";
+    document.querySelector("#risk-status").className = "tag warning";
+    document.querySelector("#source-note").textContent = "Loading NASA POWER data for this request…";
+    document.querySelector("#weather-description").textContent = "Waiting for the selected location and date range.";
+    riskFindings.replaceChildren();
+    const loading = document.createElement("div");
+    loading.className = "empty";
+    loading.textContent = "Retrieving environmental data and preparing your report…";
+    riskFindings.append(loading);
+    lastDailyData = [];
+    renderMetrics({});
+    drawEmpty(document.querySelector("#temperature-chart"), "Waiting for NASA data");
+    drawEmpty(document.querySelector("#precipitation-chart"), "Waiting for NASA data");
+    setCard("moisture", "Loading", "pending", [para("Retrieving modeled soil wetness from NASA POWER…")]);
+    setCard("usda", "Loading", "pending", [para("Looking up USDA soil survey data for this point…")]);
+
+    // Soil lookup runs in parallel with the NASA POWER request.
+    loadSoil(latitude, longitude)
+      .then(renderUsdaSoil)
+      .catch(error => setCard("usda", "Unavailable", "warning", [para(error.message || "Could not retrieve USDA soil data.")]));
+
+    try {
+      const query = new URLSearchParams({ latitude, longitude, start, end });
+      const response = await fetch(`/api/power?${query.toString()}`, { headers: { Accept: "application/json" } });
+      const contentType = response.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        const body = await response.text();
+        throw new Error(`The server did not return JSON (HTTP ${response.status}). ${body.slice(0, 180)}`);
+      }
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Request failed (${response.status}).`);
+
+      renderMetrics(data.summary);
+      renderSourceNote(data);
+      renderSoilMoisture(data.summary);
+      lastDailyData = data.daily || [];
+      redrawCharts();
+      renderRiskReport(data);
+      weatherStatus.textContent = "NASA data loaded";
+      weatherStatus.className = "tag";
+    } catch (error) {
+      errorOutput.textContent = error.message || "Could not retrieve NASA POWER data. Please try again.";
+      errorOutput.classList.add("visible");
+      weatherStatus.textContent = "Request failed";
+      weatherStatus.className = "tag warning";
+      document.querySelector("#risk-status").textContent = "Report unavailable";
+      document.querySelector("#risk-status").className = "tag warning";
+      riskFindings.replaceChildren();
+      const card = document.createElement("div"); card.className = "empty";
+      card.textContent = "A risk report could not be generated because the NASA POWER request failed.";
+      riskFindings.append(card);
+      setCard("moisture", "Unavailable", "warning", [para("Soil wetness could not be retrieved because the NASA POWER request failed.")]);
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = "Generate Growing-Season Report";
+    }
+  });
+</script>
 </body>
 </html>
