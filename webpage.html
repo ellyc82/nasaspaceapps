@@ -256,7 +256,7 @@
           <div class="chart-legend">
             <span class="legend-item"><i class="swatch" style="background:#000000"></i>Mean</span>
             <span class="legend-item"><i class="swatch" style="background:#2c744f"></i>Maximum</span>
-            <span class="legend-item"><i class="swatch" style="background:#d3d880"></i>Minimum</span>
+            <span class="legend-item"><i class="swatch" style="background:#63955e"></i>Minimum</span>
           </div>
         </article>
         <article class="chart-card">
@@ -533,7 +533,7 @@
       const series = [
         { key: "T2M", color: "#000000" },
         { key: "T2M_MAX", color: "#2c744f" },
-        { key: "T2M_MIN", color: "#d3d880" }
+        { key: "T2M_MIN", color: "#63955e" }
       ];
       const values = daily.flatMap((day) => series.map((line) => day[line.key]).filter((value) => value !== null && Number.isFinite(value)));
       if (!values.length) {
