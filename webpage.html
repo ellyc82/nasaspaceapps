@@ -532,8 +532,8 @@
       ctx.scale(ratio, ratio);
       const series = [
         { key: "T2M", color: "#2f704e" },
-        { key: "T2M_MAX", color: "#D69E76D" },
-        { key: "T2M_MIN", color: "#919fad" }
+        { key: "T2M_MAX", color: "#e39055" },
+        { key: "T2M_MIN", color: "#728da7" }
       ];
       const values = daily.flatMap((day) => series.map((line) => day[line.key]).filter((value) => value !== null && Number.isFinite(value)));
       if (!values.length) {
