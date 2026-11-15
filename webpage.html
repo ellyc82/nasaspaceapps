@@ -255,8 +255,8 @@
           <canvas id="temperature-chart" aria-label="NASA POWER daily temperature chart"></canvas>
           <div class="chart-legend">
             <span class="legend-item"><i class="swatch" style="background:#2f704e"></i>Mean</span>
-            <span class="legend-item"><i class="swatch" style="background:#d27a3c"></i>Maximum</span>
-            <span class="legend-item"><i class="swatch" style="background:#7295b5"></i>Minimum</span>
+            <span class="legend-item"><i class="swatch" style="background:#da9a6c"></i>Maximum</span>
+            <span class="legend-item"><i class="swatch" style="background:#849bb1"></i>Minimum</span>
           </div>
         </article>
         <article class="chart-card">
@@ -563,8 +563,7 @@
       }
       series.forEach((line) => {
         ctx.strokeStyle = line.color;
-         // Make the green Mean line thicker
-        ctx.lineWidth = line.key === "T2M" ? 3.5 : 1.8;
+        ctx.lineWidth = 1.8;
         ctx.beginPath();
         let started = false;
         daily.forEach((day, index) => {
