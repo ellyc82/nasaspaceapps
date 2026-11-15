@@ -169,13 +169,13 @@
           <input id="end-date" type="date" required>
         </div>
         <div class="field threshold">
-          <label for="heat-threshold">Heat threshold (°C)</label>
-          <input id="heat-threshold" type="number" value="35" step="1" required>
+          <label for="heat-threshold">Heat threshold (°F)</label>
+          <input id="heat-threshold" type="number" value="95" step="1" required>
           <p class="hint">Flag daily highs above this value.</p>
         </div>
         <div class="field threshold">
-          <label for="cold-threshold">Cold threshold (°C)</label>
-          <input id="cold-threshold" type="number" value="0" step="1" required>
+          <label for="cold-threshold">Cold threshold (°F)</label>
+          <input id="cold-threshold" type="number" value="32" step="1" required>
           <p class="hint">Flag daily lows below this value.</p>
         </div>
         <div class="field actions">
@@ -219,7 +219,7 @@
     <div class="charts">
       <article class="chart-card">
         <h3>Daily air temperature</h3>
-        <p>Daily mean, maximum, and minimum (°C)</p>
+        <p>Daily mean, maximum, and minimum (°F)</p>
         <canvas id="temperature-chart" aria-label="NASA POWER daily temperature chart"></canvas>
         <div class="chart-legend">
           <span class="legend-item"><i class="swatch" style="background:#000000"></i>Mean</span>
@@ -321,13 +321,13 @@
 <script>
   const crops = [
   
-        { name: "Processing tomato", group: "Summer row crop", kind: "summer", tLow: 18, tHigh: 27, tMid: 22.5, heat: 35, cold: "Tender (about 4°C)", wLow: 500, wHigh: 700, wMid: 600 },
+        { name: "Processing tomato", group: "Summer row crop", kind: "summer", tLow: 18, tHigh: 27, tMid: 22.5, heat: 35, cold: "Tender (about 39°F)", wLow: 500, wHigh: 700, wMid: 600 },
   
-        { name: "Corn (grain/silage)", group: "Summer row crop", kind: "summer", tLow: 18, tHigh: 32, tMid: 25, heat: 35, cold: "Tender (about 4°C)", wLow: 600, wHigh: 900, wMid: 750 },
+        { name: "Corn (grain/silage)", group: "Summer row crop", kind: "summer", tLow: 18, tHigh: 32, tMid: 25, heat: 35, cold: "Tender (about 39°F)", wLow: 600, wHigh: 900, wMid: 750 },
   
-        { name: "Cotton", group: "Summer row crop", kind: "summer", tLow: 20, tHigh: 30, tMid: 25, heat: 38, cold: "Tender (about 10°C)", wLow: 700, wHigh: 1000, wMid: 850 },
+        { name: "Cotton", group: "Summer row crop", kind: "summer", tLow: 20, tHigh: 30, tMid: 25, heat: 38, cold: "Tender (about 50°F)", wLow: 700, wHigh: 1000, wMid: 850 },
   
-        { name: "Sorghum", group: "Summer row crop", kind: "summer", tLow: 25, tHigh: 32, tMid: 28.5, heat: 38, cold: "Tender (about 8°C)", wLow: 400, wHigh: 600, wMid: 500 },
+        { name: "Sorghum", group: "Summer row crop", kind: "summer", tLow: 25, tHigh: 32, tMid: 28.5, heat: 38, cold: "Tender (about 46°F)", wLow: 400, wHigh: 600, wMid: 500 },
   
         { name: "Sunflower", group: "Summer row crop", kind: "summer", tLow: 20, tHigh: 25, tMid: 22.5, heat: 35, cold: "Hardy seedlings", wLow: 500, wHigh: 800, wMid: 650 },
   
@@ -335,15 +335,15 @@
   
         { name: "Rice", group: "Summer row crop", kind: "summer", tLow: 22, tHigh: 32, tMid: 27, heat: 35, cold: "Tender", wLow: 1000, wHigh: 1400, wMid: 1200 },
   
-        { name: "Dry beans", group: "Summer row crop", kind: "summer", tLow: 18, tHigh: 25, tMid: 21.5, heat: 32, cold: "Tender (about 5°C)", wLow: 350, wHigh: 500, wMid: 425 },
+        { name: "Dry beans", group: "Summer row crop", kind: "summer", tLow: 18, tHigh: 25, tMid: 21.5, heat: 32, cold: "Tender (about 41°F)", wLow: 350, wHigh: 500, wMid: 425 },
   
-        { name: "Sweet potatoes", group: "Summer row crop", kind: "summer", tLow: 21, tHigh: 29, tMid: 25, heat: 35, cold: "Tender (about 10°C)", wLow: 450, wHigh: 650, wMid: 550 },
+        { name: "Sweet potatoes", group: "Summer row crop", kind: "summer", tLow: 21, tHigh: 29, tMid: 25, heat: 35, cold: "Tender (about 50°F)", wLow: 450, wHigh: 650, wMid: 550 },
   
-        { name: "Cantaloupe / watermelon", group: "Summer row crop", kind: "summer", tLow: 24, tHigh: 30, tMid: 27, heat: 38, cold: "Tender (about 10°C)", wLow: 400, wHigh: 600, wMid: 500 },
+        { name: "Cantaloupe / watermelon", group: "Summer row crop", kind: "summer", tLow: 24, tHigh: 30, tMid: 27, heat: 38, cold: "Tender (about 50°F)", wLow: 400, wHigh: 600, wMid: 500 },
   
-        { name: "Peppers", group: "Summer row crop", kind: "summer", tLow: 20, tHigh: 30, tMid: 25, heat: 35, cold: "Tender (about 10°C)", wLow: 600, wHigh: 900, wMid: 750 },
+        { name: "Peppers", group: "Summer row crop", kind: "summer", tLow: 20, tHigh: 30, tMid: 25, heat: 35, cold: "Tender (about 50°F)", wLow: 600, wHigh: 900, wMid: 750 },
   
-        { name: "Winter wheat", group: "Winter small grain / cover", kind: "winter", tLow: 10, tHigh: 24, tMid: 17, heat: 30, cold: "Hardy (to about -10°C)", wLow: 350, wHigh: 550, wMid: 450 },
+        { name: "Winter wheat", group: "Winter small grain / cover", kind: "winter", tLow: 10, tHigh: 24, tMid: 17, heat: 30, cold: "Hardy (to about 14°F)", wLow: 350, wHigh: 550, wMid: 450 },
   
         { name: "Barley", group: "Winter small grain / cover", kind: "winter", tLow: 12, tHigh: 25, tMid: 18.5, heat: 30, cold: "Hardy", wLow: 350, wHigh: 500, wMid: 425 },
   
@@ -380,10 +380,22 @@
         { name: "Grapes", group: "Orchard / vine (does not rotate)", kind: "perennial", tLow: 20, tHigh: 30, tMid: 25, heat: 38, cold: "Dormant in winter", wLow: 500, wHigh: 900, wMid: 700 }
       ];
 
+  function celsiusToFahrenheit(celsius) {
+    return (celsius * 9 / 5) + 32;
+}
+
+function fahrenheitToCelsius(fahrenheit) {
+    return (fahrenheit - 32) * 5 / 9;
+}
+
+function formatFahrenheit(celsius) {
+    return `${celsiusToFahrenheit(celsius).toFixed(1)}°F`;
+}
+
   const parameterLabels = [
-    ["T2M", "Mean air temperature", "°C"],
-    ["T2M_MAX", "Average daily high", "°C"],
-    ["T2M_MIN", "Average daily low", "°C"],
+    ["T2M", "Mean air temperature", "°F"],
+    ["T2M_MAX", "Average daily high", "°F"],
+    ["T2M_MIN", "Average daily low", "°F"],
     ["PRECTOTCORR", "Accumulated precipitation", "mm"],
     ["ALLSKY_SFC_SW_DWN", "Daily solar energy", "kWh/m²/day"],
     ["RH2M", "Mean relative humidity", "%"],
@@ -417,8 +429,13 @@
         value.textContent = "N/A";
       } else {
         const digits = parameter === "RH2M" ? 1 : parameter.startsWith("GWET") ? 3 : 2;
-        value.textContent = `${Number(datum.value).toFixed(digits)} ${displayUnit}`.trim();
-      }
+      const isTemperature = ["T2M", "T2M_MAX", "T2M_MIN"].includes(parameter);
+
+      const displayValue = isTemperature
+          ? celsiusToFahrenheit(Number(datum.value)).toFixed(1)
+          : Number(datum.value).toFixed(digits);
+
+value.textContent = `${displayValue} ${displayUnit}`.trim();      }
       const detail = document.createElement("div");
       detail.className = "metric-detail";
       detail.textContent = datum
@@ -547,7 +564,11 @@
       { key: "T2M_MAX", color: "#3ea26e" },
       { key: "T2M_MIN", color: "#ecd856" }
     ];
-    const values = daily.flatMap(day => series.map(line => day[line.key]).filter(value => value !== null && Number.isFinite(value)));
+    const values = daily.flatMap(day =>
+    series.map(line => day[line.key])
+        .filter(value => value !== null && Number.isFinite(value))
+        .map(value => celsiusToFahrenheit(value))
+);
     if (!values.length) { drawEmpty(canvas, "No valid temperature measurements"); return; }
     let minimum = Math.min(...values);
     let maximum = Math.max(...values);
@@ -560,7 +581,7 @@
     ctx.textAlign = "right";
     ctx.textBaseline = "middle";
     for (let tick = 0; tick <= 3; tick++) {
-      const value = minimum + (maximum - minimum) * tick / 3;
+      const value = maximum - (maximum - minimum) * tick / 3;
       const yy = pad.top + plotHeight * tick / 3;
       ctx.strokeStyle = "#e7ece5";
       ctx.beginPath(); ctx.moveTo(pad.left, yy); ctx.lineTo(width - pad.right, yy); ctx.stroke();
@@ -572,7 +593,14 @@
       ctx.beginPath();
       let started = false;
       daily.forEach((day, index) => {
-        const value = day[line.key];
+        const rawValue = day[line.key];
+
+if (rawValue === null || !Number.isFinite(rawValue)) {
+    started = false;
+    return;
+}
+
+const value = celsiusToFahrenheit(rawValue);
         if (value === null || !Number.isFinite(value)) { started = false; return; }
         const x = pad.left + (daily.length < 2 ? plotWidth / 2 : index / (daily.length - 1) * plotWidth);
         if (started) ctx.lineTo(x, y(value)); else { ctx.moveTo(x, y(value)); started = true; }
@@ -626,8 +654,11 @@
 
   function renderRiskReport(data) {
     const daily = data.daily || [];
-    const heatThreshold = Number(document.querySelector("#heat-threshold").value);
-    const coldThreshold = Number(document.querySelector("#cold-threshold").value);
+    const heatThresholdF = Number(document.querySelector("#heat-threshold").value);
+    const coldThresholdF = Number(document.querySelector("#cold-threshold").value);
+
+    const heatThreshold = fahrenheitToCelsius(heatThresholdF);
+    const coldThreshold = fahrenheitToCelsius(coldThresholdF);
 
     const validHighs = daily.filter(day => Number.isFinite(day.T2M_MAX));
     const validLows = daily.filter(day => Number.isFinite(day.T2M_MIN));
@@ -650,8 +681,8 @@
     }
 
     const metrics = [
-      ["Days above heat threshold", `${heatDays}`, `Daily high above ${heatThreshold}°C · ${validHighs.length} valid days`],
-      ["Days below cold threshold", `${coldDays}`, `Daily low below ${coldThreshold}°C · ${validLows.length} valid days`],
+      ["Days above heat threshold", `${heatDays}`, `Daily high above ${heatThreshold}°F · ${validHighs.length} valid days`],
+      ["Days below cold threshold", `${coldDays}`, `Daily low below ${coldThreshold}°F · ${validLows.length} valid days`],
       ["Longest dry stretch", `${longestDryStretch} days`, "Consecutive valid days below 1 mm precipitation"],
       ["Total precipitation", `${totalRain.toFixed(1)} mm`, `${validRain.length} days with valid rainfall data`]
     ];
@@ -668,15 +699,15 @@
     const findings = [];
     if (validHighs.length) {
       findings.push(heatDays
-        ? `${heatDays} of ${validHighs.length} valid days had a daily high above your selected heat screening threshold (${heatThreshold}°C). Review whether those days overlapped with sensitive crop growth stages.`
-        : `No valid daily highs exceeded your selected heat screening threshold (${heatThreshold}°C) during this period.`);
+        ? `${heatDays} of ${validHighs.length} valid days had a daily high above your selected heat screening threshold (${heatThreshold}°F). Review whether those days overlapped with sensitive crop growth stages.`
+        : `No valid daily highs exceeded your selected heat screening threshold (${heatThreshold}°F) during this period.`);
     } else {
       findings.push("No valid daily maximum-temperature measurements were available, so heat-screening days could not be calculated.");
     }
     if (validLows.length) {
       findings.push(coldDays
-        ? `${coldDays} of ${validLows.length} valid days had a daily low below your selected cold screening threshold (${coldThreshold}°C). Consider whether cold-sensitive crops or growth stages were present.`
-        : `No valid daily lows fell below your selected cold screening threshold (${coldThreshold}°C) during this period.`);
+        ? `${coldDays} of ${validLows.length} valid days had a daily low below your selected cold screening threshold (${coldThreshold}°F). Consider whether cold-sensitive crops or growth stages were present.`
+        : `No valid daily lows fell below your selected cold screening threshold (${coldThreshold}°F) during this period.`);
     } else {
       findings.push("No valid daily minimum-temperature measurements were available, so cold-screening days could not be calculated.");
     }
@@ -795,7 +826,7 @@
         ? "Temperature data unavailable"
         : distance === 0
           ? "Observed period mean is within the draft range"
-          : `${distance.toFixed(1)}°C outside the draft range`;
+          : `${(distance * 1.8).toFixed(1)}°F outside the draft range`
 
       const validHighs = (data.daily || []).filter(day => Number.isFinite(day.T2M_MAX));
       const hotDays = validHighs.filter(day => day.T2M_MAX > crop.heat).length;
@@ -803,10 +834,12 @@
       const info = document.createElement("div");
       info.className = "crop-info";
       const items = [
-        ["Draft mean-temperature range", `${crop.tLow}–${crop.tHigh}°C`],
+        ["Draft mean-temperature range",
+    `${celsiusToFahrenheit(crop.tLow).toFixed(1)}–${celsiusToFahrenheit(crop.tHigh).toFixed(1)}°F`],
         ["Observed period mean", tempText],
         ["Draft seasonal water-use range", `${crop.wLow}–${crop.wHigh} mm`],
-        ["Days above draft heat threshold", `${hotDays} days above ${crop.heat}°C`],
+        ["Days above draft heat threshold",
+    `${hotDays} days above ${celsiusToFahrenheit(crop.heat).toFixed(1)}°F`],
         ["Cold / winter note", crop.cold],
         ["Season context", seasonText]
       ];
