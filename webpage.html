@@ -349,7 +349,7 @@
       ["T2M_MAX", "Average daily high", "°C"],
       ["T2M_MIN", "Average daily low", "°C"],
       ["PRECTOTCORR", "Accumulated precipitation", "mm"],
-      ["ALLSKY_SFC_SW_DWN", "Mean solar radiation", "kWh/m²/day"],
+      ["ALLSKY_SFC_SW_DWN", "Amount of solar energy in a day", "kWh/m²/day"],
       ["RH2M", "Mean relative humidity", "%"],
       ["GWETTOP", "Surface soil wetness, 0–1 (modeled)", ""],
       ["GWETROOT", "Root-zone soil wetness, 0–1 (modeled)", ""]
@@ -715,7 +715,7 @@
       const info = document.createElement("div");
       info.className = "crop-info";
       info.append(
-        makeDatum("Crop's optimal daily temperature range", `${crop.tLow}–${crop.tHigh}°C`),
+        makeDatum("Crop's optimal daily temperature", `${crop.tLow}–${crop.tHigh}°C`),
         makeDatum("Observed period mean", temperatureFit),
         makeDatum("Approx. seasonal crop water use", `${crop.wLow}–${crop.wHigh} mm (draft table)`),
         makeDatum("Heat comparison", heatFit),
