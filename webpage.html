@@ -255,8 +255,8 @@
           <canvas id="temperature-chart" aria-label="NASA POWER daily temperature chart"></canvas>
           <div class="chart-legend">
             <span class="legend-item"><i class="swatch" style="background:#2f704e"></i>Mean</span>
-            <span class="legend-item"><i class="swatch" style="background:#d69e76"></i>Maximum</span>
-            <span class="legend-item"><i class="swatch" style="background:#919fad"></i>Minimum</span>
+            <span class="legend-item"><i class="swatch" style="background:#e39055"></i>Maximum</span>
+            <span class="legend-item"><i class="swatch" style="background:#728da7"></i>Minimum</span>
           </div>
         </article>
         <article class="chart-card">
@@ -532,7 +532,7 @@
       ctx.scale(ratio, ratio);
       const series = [
         { key: "T2M", color: "#2f704e" },
-        { key: "T2M_MAX", color: "#d69E76" },
+        { key: "T2M_MAX", color: "#D69E76D" },
         { key: "T2M_MIN", color: "#919fad" }
       ];
       const values = daily.flatMap((day) => series.map((line) => day[line.key]).filter((value) => value !== null && Number.isFinite(value)));
