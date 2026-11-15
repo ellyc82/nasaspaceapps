@@ -99,7 +99,7 @@ def _summarize_response(
         raise PowerServiceError("NASA POWER returned no daily parameter data.") from exc
 
     daily: dict[str, dict[str, float | None]] = {}
-    summary: dict[str, dict[str, float | int | None]] = {}
+    summary: dict[str, dict[str, Any]] = {}
     warnings: list[str] = []
 
     for parameter in POWER_PARAMETERS:
@@ -127,14 +127,14 @@ def _summarize_response(
             "days_available": len(values),
             "aggregation": aggregate_type,
         }
- 
+
     ordered_daily = []
     for date_key in sorted(daily):
-        values = daily[date_key]
+        day_values = daily[date_key]
         ordered_daily.append(
             {
                 "date": f"{date_key[:4]}-{date_key[4:6]}-{date_key[6:8]}",
-                **{parameter: values.get(parameter) for parameter in POWER_PARAMETERS},
+                **{parameter: day_values.get(parameter) for parameter in POWER_PARAMETERS},
             }
         )
 
