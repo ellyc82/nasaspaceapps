@@ -233,7 +233,7 @@
         <div class="metric"><div class="metric-name">Average daily high</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · T2M_MAX</div></div>
         <div class="metric"><div class="metric-name">Average daily low</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · T2M_MIN</div></div>
         <div class="metric"><div class="metric-name">Accumulated precipitation</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · PRECTOTCORR</div></div>
-        <div class="metric"><div class="metric-name">Mean solar radiation</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · ALLSKY_SFC_SW_DWN</div></div>
+        <div class="metric"><div class="metric-name">Amount of solar energy in a day</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · ALLSKY_SFC_SW_DWN</div></div>
         <div class="metric"><div class="metric-name">Mean relative humidity</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · RH2M</div></div>
         <div class="metric"><div class="metric-name">Surface soil wetness, 0–1 (modeled)</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · GWETTOP</div></div>
         <div class="metric"><div class="metric-name">Root-zone soil wetness, 0–1 (modeled)</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · GWETROOT</div></div>
@@ -704,10 +704,10 @@
       top.append(titleWrap, badge);
 
       const temperatureFit = meanTemperature === null
-        ? "Temperature data unavailable"
+        ? "Temperature data unavailable" 
         : meanTemperature >= crop.tLow && meanTemperature <= crop.tHigh
-          ? "Observed mean is within draft optimum range"
-          : `${temperatureDistance(crop, meanTemperature).toFixed(1)}°C outside draft optimum range`;
+          ? "Observed average is within optimal range"
+          : `${temperatureDistance(crop, meanTemperature).toFixed(1)}°C outside optimal range`;
       const hotDays = daily.filter((day) => day.T2M_MAX !== null && day.T2M_MAX > crop.heat).length;
       const heatFit = hotDays
         ? `${hotDays} day${hotDays === 1 ? "" : "s"} above draft heat threshold`
@@ -715,7 +715,7 @@
       const info = document.createElement("div");
       info.className = "crop-info";
       info.append(
-        makeDatum("Draft optimum daily mean", `${crop.tLow}–${crop.tHigh}°C`),
+        makeDatum("Crop's optimal daily temperature range", `${crop.tLow}–${crop.tHigh}°C`),
         makeDatum("Observed period mean", temperatureFit),
         makeDatum("Approx. seasonal crop water use", `${crop.wLow}–${crop.wHigh} mm (draft table)`),
         makeDatum("Heat comparison", heatFit),
