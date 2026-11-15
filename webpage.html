@@ -88,10 +88,10 @@
     .section-head { display: flex; justify-content: space-between; align-items: start; gap: 16px; margin-bottom: 11px; }
     .section-head h2 { margin: 0; font-size: 1.1rem; letter-spacing: -.025em; }
     .section-head p { margin: 5px 0 0; color: var(--muted); font-size: .8rem; line-height: 1.5; }
-    .tag { flex: 0 0 auto; padding: 6px 9px; border-radius: 99px; background: var(--green-light); color: var(--green-dark); font-size: .7rem; font-weight: 750; }
+    .tag { flex: 0 0 auto; display: inline-block; padding: 6px 9px; border-radius: 99px; background: var(--green-light); color: var(--green-dark); font-size: .7rem; font-weight: 750; }
     .tag.pending { background: #f0f1ed; color: #68776d; }
     .tag.warning { background: var(--gold-light); color: #805c1e; }
-    .metric-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
     .metric { min-height: 103px; padding: 14px 14px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
     .metric-name { color: var(--muted); font-size: .7rem; line-height: 1.4; }
     .metric-value { margin-top: 8px; color: var(--green-dark); font-size: 1.38rem; font-weight: 780; letter-spacing: -.04em; }
@@ -104,7 +104,7 @@
     .chart-legend { display: flex; flex-wrap: wrap; gap: 7px 14px; color: var(--muted); font-size: .68rem; }
     .legend-item { display: inline-flex; align-items: center; gap: 5px; }
     .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 3px; }
-    .two-panels { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .75fr); gap: 15px; align-items: start; }
+    .two-panels { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, 1fr); gap: 15px; align-items: start; }
     .candidate-list { display: grid; gap: 10px; }
     .crop-card { padding: 15px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
     .crop-top { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
@@ -118,8 +118,15 @@
     .reason { margin: 10px 0 0; color: #526457; font-size: .75rem; line-height: 1.55; }
     .side-stack { display: grid; gap: 12px; }
     .pending-card { padding: 16px; border: 1px dashed #cbd6c9; border-radius: 12px; background: #fafbf7; }
-    .pending-card h3 { margin: 0; font-size: .88rem; }
+    .pending-card.live { border-style: solid; border-color: var(--line); background: var(--panel); }
+    .pending-card h3 { margin: 6px 0 0; font-size: .88rem; }
     .pending-card p { margin: 7px 0 0; color: var(--muted); font-size: .75rem; line-height: 1.55; }
+    .soil-table-wrap { margin-top: 10px; overflow-x: auto; }
+    .soil-table { width: 100%; border-collapse: collapse; font-size: .68rem; }
+    .soil-table th, .soil-table td { padding: 5px 6px; border-bottom: 1px solid #edf0e9; text-align: right; white-space: nowrap; }
+    .soil-table th:first-child, .soil-table td:first-child { text-align: left; }
+    .soil-table th { color: var(--muted); font-weight: 700; }
+    .soil-table td { color: #34473a; }
     .source { margin: 13px 2px 0; color: #76847a; font-size: .7rem; line-height: 1.55; }
     .source a { color: var(--green-dark); }
     .empty { padding: 32px 18px; border: 1px dashed #d1dbcf; border-radius: 12px; background: var(--panel); color: var(--muted); text-align: center; font-size: .83rem; line-height: 1.6; }
@@ -207,7 +214,7 @@
             <button class="submit" id="submit-button" type="submit">Fetch NASA data & evaluate</button>
           </div>
         </div>
-        <p class="form-note">Choose up to 366 days. NASA POWER daily data begins on 1981-01-01; very recent dates may not be available yet.</p>
+        <p class="form-note">Choose up to 366 days. NASA POWER daily data begins on 1981-01-01; dates cannot be in the future, and very recent dates may not be available yet.</p>
         <p class="notice"><strong>Crop table warning:</strong> The attached spreadsheet identifies its agronomy values as unverified working estimates. Temperature matches are screening guidance, not a planting-date or yield guarantee. Consult local agronomists before acting.</p>
         <div class="error" id="error-message" role="alert"></div>
       </form>
@@ -228,6 +235,8 @@
         <div class="metric"><div class="metric-name">Accumulated precipitation</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · PRECTOTCORR</div></div>
         <div class="metric"><div class="metric-name">Mean solar radiation</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · ALLSKY_SFC_SW_DWN</div></div>
         <div class="metric"><div class="metric-name">Mean relative humidity</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · RH2M</div></div>
+        <div class="metric"><div class="metric-name">Surface soil wetness, 0–1 (modeled)</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · GWETTOP</div></div>
+        <div class="metric"><div class="metric-name">Root-zone soil wetness, 0–1 (modeled)</div><div class="metric-value">—</div><div class="metric-detail">NASA POWER · GWETROOT</div></div>
       </div>
       <p class="source" id="source-note">No measurements have been fetched yet. Values will be returned by NASA POWER and missing measurements will remain unavailable.</p>
     </section>
@@ -275,15 +284,19 @@
         </div>
       </div>
       <aside class="side-stack" aria-label="Other data sources">
-        <article class="pending-card">
-          <span class="tag pending">Not connected yet</span>
-          <h3>SMAP soil moisture</h3>
-          <p>Surface soil moisture is not being retrieved yet. No soil-moisture values or daytime/nighttime observations are shown in this version.</p>
+        <article class="pending-card" id="moisture-card">
+          <span class="tag pending" id="moisture-tag">Waiting for data</span>
+          <h3>Soil moisture (modeled)</h3>
+          <div id="moisture-body">
+            <p>Fetch NASA data to see modeled surface and root-zone soil wetness. This is not SMAP satellite data, which requires an Earthdata login.</p>
+          </div>
         </article>
-        <article class="pending-card">
-          <span class="tag pending">Not connected yet</span>
+        <article class="pending-card" id="usda-card">
+          <span class="tag pending" id="usda-tag">Waiting for data</span>
           <h3>USDA soil characteristics</h3>
-          <p>Soil texture, organic matter, and nutrient-related properties are not connected yet. This planner does not estimate or claim field N-P-K levels.</p>
+          <div id="usda-body">
+            <p>Fetch NASA data to look up USDA soil survey properties (texture, organic matter, pH, water capacity) for this point. US locations only. This planner does not estimate or claim field N-P-K levels.</p>
+          </div>
         </article>
         <article class="pending-card">
           <span class="tag warning">Rotation rules pending</span>
@@ -294,7 +307,7 @@
     </section>
 
     <footer>
-      NASA POWER values are climate observations / estimates for a coordinate, not direct field sensor readings. Rainfall is displayed separately from crop water demand; it is not treated as irrigation or as total water available. The crop table is unverified and does not include planting windows. Review all agronomic decisions with local extension guidance.
+      NASA POWER values are climate observations / estimates for a coordinate, not direct field sensor readings. Soil wetness values are model-derived (MERRA-2), not SMAP measurements. USDA soil values are soil survey map-unit estimates, not measurements of your specific field. Rainfall is displayed separately from crop water demand; it is not treated as irrigation or as total water available. The crop table is unverified and does not include planting windows. Review all agronomic decisions with local extension guidance.
     </footer>
   </main>
 
@@ -337,7 +350,9 @@
       ["T2M_MIN", "Average daily low", "°C"],
       ["PRECTOTCORR", "Accumulated precipitation", "mm"],
       ["ALLSKY_SFC_SW_DWN", "Mean solar radiation", "kWh/m²/day"],
-      ["RH2M", "Mean relative humidity", "%"]
+      ["RH2M", "Mean relative humidity", "%"],
+      ["GWETTOP", "Surface soil wetness, 0–1 (modeled)", ""],
+      ["GWETROOT", "Root-zone soil wetness, 0–1 (modeled)", ""]
     ];
     const form = document.querySelector("#planner-form");
     const results = document.querySelector("#recommendations");
@@ -345,6 +360,11 @@
     const submitButton = document.querySelector("#submit-button");
     const cropSelect = document.querySelector("#crop-select");
     let lastDailyData = [];
+
+    // Dates cannot be in the future (the server checks against the UTC date).
+    const todayUtc = new Date().toISOString().slice(0, 10);
+    document.querySelector("#start-date").max = todayUtc;
+    document.querySelector("#end-date").max = todayUtc;
 
     function updateCropOptions() {
       const selectedName = cropSelect.value;
@@ -378,8 +398,9 @@
         if (!datum || datum.value === null) {
           value.textContent = "N/A";
         } else {
-          const number = Number(datum.value).toFixed(parameter === "RH2M" ? 1 : 2);
-          value.textContent = `${number} ${displayUnit}`;
+          const digits = parameter === "RH2M" ? 1 : parameter.startsWith("GWET") ? 3 : 2;
+          const number = Number(datum.value).toFixed(digits);
+          value.textContent = `${number} ${displayUnit}`.trim();
         }
         const detail = document.createElement("div");
         detail.className = "metric-detail";
@@ -389,6 +410,101 @@
         card.append(name, value, detail);
         container.append(card);
       }
+    }
+
+    function para(text) {
+      const p = document.createElement("p");
+      p.textContent = text;
+      return p;
+    }
+
+    // Updates one of the side cards: prefix is "moisture" or "usda".
+    function setCard(prefix, tagText, tagClass, nodes) {
+      const tag = document.querySelector(`#${prefix}-tag`);
+      tag.textContent = tagText;
+      tag.className = `tag ${tagClass}`.trim();
+      document.querySelector(`#${prefix}-card`).classList.toggle("live", tagClass === "");
+      document.querySelector(`#${prefix}-body`).replaceChildren(...nodes);
+    }
+
+    function renderSoilMoisture(summary) {
+      const top = summary.GWETTOP;
+      const root = summary.GWETROOT;
+      const has = (datum) => datum && datum.value !== null;
+      if (!has(top) && !has(root)) {
+        setCard("moisture", "Unavailable", "warning", [
+          para("NASA POWER returned no soil wetness values for this request.")
+        ]);
+        return;
+      }
+      const show = (datum) => (has(datum) ? Number(datum.value).toFixed(3) : "N/A");
+      setCard("moisture", "Modeled · not SMAP", "", [
+        para(`Surface soil wetness: ${show(top)} · Root zone: ${show(root)}`),
+        para("Period averages on a 0–1 scale (0 = dry, 1 = saturated). These are NASA POWER model estimates (MERRA-2), not SMAP satellite measurements.")
+      ]);
+    }
+
+    function formatNumber(value, digits) {
+      if (value === null || value === undefined || value === "") return "—";
+      const number = Number(value);
+      return Number.isFinite(number) ? number.toFixed(digits) : "—";
+    }
+
+    function renderUsdaSoil(data) {
+      const groups = new Map();
+      for (const horizon of data.horizons) {
+        const key = `${horizon.compname}|${horizon.comppct_r}`;
+        if (!groups.has(key)) groups.set(key, { name: horizon.compname, pct: horizon.comppct_r, rows: [] });
+        groups.get(key).rows.push(horizon);
+      }
+      const components = [...groups.values()];
+      const main = components[0];
+
+      const table = document.createElement("table");
+      table.className = "soil-table";
+      const head = table.createTHead().insertRow();
+      for (const heading of ["Depth (cm)", "Sand %", "Silt %", "Clay %", "pH", "OM %", "AWC"]) {
+        const th = document.createElement("th");
+        th.textContent = heading;
+        head.append(th);
+      }
+      const bodyEl = table.createTBody();
+      for (const row of main.rows) {
+        const sand = row.sandtotal_r === null || row.sandtotal_r === "" ? null : Number(row.sandtotal_r);
+        const clay = row.claytotal_r === null || row.claytotal_r === "" ? null : Number(row.claytotal_r);
+        const silt = Number.isFinite(sand) && Number.isFinite(clay) ? 100 - sand - clay : null;
+        const cells = [
+          `${formatNumber(row.hzdept_r, 0)}–${formatNumber(row.hzdepb_r, 0)}`,
+          formatNumber(sand, 0),
+          formatNumber(silt, 0),
+          formatNumber(clay, 0),
+          formatNumber(row.ph1to1h2o_r, 1),
+          formatNumber(row.om_r, 1),
+          formatNumber(row.awc_r, 2)
+        ];
+        const tr = bodyEl.insertRow();
+        for (const text of cells) tr.insertCell().textContent = text;
+      }
+      const wrap = document.createElement("div");
+      wrap.className = "soil-table-wrap";
+      wrap.append(table);
+
+      const nodes = [
+        para(`Dominant soil component: ${main.name} (${main.pct}% of the map unit).`),
+        wrap
+      ];
+      const others = components.slice(1).map((item) => `${item.name} (${item.pct}%)`);
+      if (others.length) nodes.push(para(`Other major components: ${others.join(", ")}.`));
+      nodes.push(para("OM = organic matter; AWC = available water capacity (cm of water per cm of soil). USDA soil survey estimates for the map unit at this point, not measurements of your field. No N-P-K levels are provided."));
+      setCard("usda", "USDA soil survey", "", nodes);
+    }
+
+    async function loadSoil(latitude, longitude) {
+      const query = new URLSearchParams({ latitude, longitude });
+      const response = await fetch(`/api/soil?${query.toString()}`, { headers: { Accept: "application/json" } });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || `Soil request failed (${response.status}).`);
+      return data;
     }
 
     function drawEmpty(canvas, message) {
@@ -659,6 +775,11 @@
         errorOutput.classList.add("visible");
         return;
       }
+      if (end > todayUtc || start > todayUtc) {
+        errorOutput.textContent = `Dates cannot be in the future. The latest allowed date is ${todayUtc}.`;
+        errorOutput.classList.add("visible");
+        return;
+      }
 
       submitButton.disabled = true;
       submitButton.textContent = "Retrieving NASA data…";
@@ -677,6 +798,18 @@
       renderMetrics({});
       drawEmpty(document.querySelector("#temperature-chart"), "Waiting for NASA data");
       drawEmpty(document.querySelector("#precipitation-chart"), "Waiting for NASA data");
+      setCard("moisture", "Loading", "pending", [para("Retrieving modeled soil wetness from NASA POWER…")]);
+      setCard("usda", "Loading", "pending", [para("Looking up USDA soil survey data for this point…")]);
+
+      // The USDA lookup runs in parallel and does not depend on the dates.
+      loadSoil(latitude, longitude)
+        .then(renderUsdaSoil)
+        .catch((error) => {
+          setCard("usda", "Unavailable", "warning", [
+            para(error.message || "Could not retrieve USDA soil data.")
+          ]);
+        });
+
       try {
         const query = new URLSearchParams({ latitude, longitude, start, end });
         const response = await fetch(`/api/power?${query.toString()}`, { headers: { Accept: "application/json" } });
@@ -685,6 +818,7 @@
 
         renderMetrics(data.summary);
         renderSourceNote(data);
+        renderSoilMoisture(data.summary);
         lastDailyData = data.daily;
         redrawCharts();
         renderRecommendations(data);
@@ -695,6 +829,7 @@
         errorOutput.classList.add("visible");
         document.querySelector("#weather-status").textContent = "Request failed";
         document.querySelector("#weather-status").className = "tag warning";
+        setCard("moisture", "Unavailable", "warning", [para("Soil wetness could not be retrieved because the NASA POWER request failed.")]);
       } finally {
         submitButton.disabled = false;
         submitButton.textContent = "Fetch NASA data & evaluate";

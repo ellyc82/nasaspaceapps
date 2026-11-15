@@ -24,6 +24,8 @@ POWER_PARAMETERS = (
     "PRECTOTCORR",
     "ALLSKY_SFC_SW_DWN",
     "RH2M",
+    "GWETTOP",   # surface soil wetness (modeled, MERRA-2)
+    "GWETROOT",  # root zone soil wetness (modeled, MERRA-2)
 )
 PARAMETER_UNITS = {
     "T2M": "°C",
@@ -32,10 +34,13 @@ PARAMETER_UNITS = {
     "PRECTOTCORR": "mm/day",
     "ALLSKY_SFC_SW_DWN": "kWh/m²/day",
     "RH2M": "%",
+    "GWETTOP": "fraction",
+    "GWETROOT": "fraction",
 }
 CACHE_TTL_SECONDS = 60 * 60
 CACHE_MAX_ENTRIES = 256
 MISSING_VALUE = -999
+SDA_URL = "https://sdmdataaccess.sc.egov.usda.gov/Tabular/post.rest"
 
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
@@ -144,6 +149,7 @@ def _summarize_response(
         "warnings": warnings,
         "source": "NASA POWER Daily API (AG community, UTC)",
         "source_url": POWER_URL,
+        "soil_wetness_note": "GWETTOP and GWETROOT are model-derived (MERRA-2), not SMAP measurements.",
         "fetched_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -222,6 +228,59 @@ def power():
         return jsonify(_get_power_data(latitude, longitude, start_date, end_date))
     except PowerServiceError as exc:
         return jsonify({"error": str(exc)}), 502
+
+
+@app.get("/api/soil")
+def soil():
+    """USDA NRCS Soil Data Access: soil horizons for the major components at a point (US only)."""
+    try:
+        latitude = _parse_coordinate(request.args.get("latitude"), "Latitude", -90, 90)
+        longitude = _parse_coordinate(request.args.get("longitude"), "Longitude", -180, 180)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+    # Coordinates are validated floats, so formatting them into the query is safe.
+    # WKT order is longitude first, then latitude.
+    sql = f"""
+    SELECT c.compname, c.comppct_r, ch.hzname, ch.hzdept_r, ch.hzdepb_r,
+           ch.sandtotal_r, ch.claytotal_r, ch.ph1to1h2o_r, ch.om_r, ch.awc_r
+    FROM component c JOIN chorizon ch ON c.cokey = ch.cokey
+    WHERE c.majcompflag = 'Yes' AND c.mukey IN
+      (SELECT * FROM SDA_Get_Mukey_from_intersection_with_WktWgs84('POINT({longitude:.6f} {latitude:.6f})'))
+    ORDER BY c.comppct_r DESC, ch.hzdept_r
+    """
+    body = json.dumps({"format": "JSON+COLUMNNAME", "query": sql}).encode("utf-8")
+    req = Request(
+        SDA_URL,
+        data=body,
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": "SmartCropRotationPlanner/1.0",
+        },
+    )
+    try:
+        with urlopen(req, timeout=30) as response:
+            table = json.loads(response.read().decode("utf-8")).get("Table", [])
+    except HTTPError as exc:
+        app.logger.warning("USDA SDA returned HTTP %s", exc.code)
+        return jsonify({"error": f"USDA Soil Data Access returned HTTP {exc.code}. Please retry later."}), 502
+    except (URLError, TimeoutError, json.JSONDecodeError, UnicodeDecodeError) as exc:
+        app.logger.warning("USDA SDA request failed: %s", exc)
+        return jsonify({"error": "USDA Soil Data Access is unavailable. Please retry later."}), 502
+
+    if len(table) < 2:
+        return jsonify({"error": "No USDA soil data for this point (US coverage only)."}), 404
+
+    columns, rows = table[0], table[1:]
+    return jsonify(
+        {
+            "location": {"latitude": latitude, "longitude": longitude},
+            "horizons": [dict(zip(columns, row)) for row in rows],
+            "source": "USDA NRCS Soil Data Access",
+            "fetched_at": datetime.now(timezone.utc).isoformat(),
+        }
+    )
 
 
 if __name__ == "__main__":
